@@ -9,15 +9,16 @@ from statistics import mode
 
 class Clusterer(BaseEstimator):
     def __init__(self, detector,
-                 hidden_dim=50, hidden_dim_2=50, 
+                 hidden_dim=50, hidden_dim_2=50, dropout_rate=0.2,
                  batch_size=128, n_epochs=5, 
-                 val_frac=0.1):
+                 val_frac=0.2):
         """
         LSTM model example.
         TODO: fill in more details.
         """
         self.hidden_dim = hidden_dim
         self.hidden_dim_2 = hidden_dim_2
+        self.dropout_rate = dropout_rate
         self.batch_size = batch_size
         self.n_epochs = n_epochs
         self.val_frac = val_frac
@@ -48,6 +49,7 @@ class Clusterer(BaseEstimator):
                     optimizer='Nadam', metrics=['accuracy']):
         n_hidden=self.hidden_dim
         n_hidden_2=self.hidden_dim_2
+        dropout_rate=self.dropout_rate
         length=self.detector.n_layers
         width=self.nstraws_perlayer
         ## flatten the hits/seeds for each straw into a single dimension of 2*width elements
@@ -59,15 +61,15 @@ class Clusterer(BaseEstimator):
             hidden_1[seed_location] = keras.layers.Bidirectional(keras.layers.LSTM(n_hidden, return_sequences=True))(inputs)
             ## could try adding more LSTM layers, with dropout inbetween to prevent overfitting
             if ('LSTMx2' in model_structure) and ('Dropoutx2' in model_structure):
-                dropout_1[seed_location] = keras.layers.Dropout(0.2)(hidden_1[seed_location])
+                dropout_1[seed_location] = keras.layers.Dropout(dropout_rate)(hidden_1[seed_location])
                 hidden_2[seed_location] = keras.layers.Bidirectional(keras.layers.LSTM(n_hidden_2, return_sequences=True))(dropout_1[seed_location])
                 ## for some very weird reason, adding the 2nd dropout layer crashes on my machine...
-                dropout_2[seed_location] = keras.layers.Dropout(0.2)(hidden_2)
+                dropout_2[seed_location] = keras.layers.Dropout(dropout_rate)(hidden_2)
                 outputs[seed_location] = keras.layers.TimeDistributed( keras.layers.Dense(width+1, activation='softmax'))(dropout_2[seed_location])
             elif ('LSTMx2' in model_structure) and ('Dropout' in model_structure):
-                dropout_1[seed_location] = keras.layers.Dropout(0.2)(hidden_1[seed_location])
+                dropout_1[seed_location] = keras.layers.Dropout(dropout_rate)(hidden_1[seed_location])
                 hidden_2[seed_location] = keras.layers.Bidirectional(keras.layers.LSTM(n_hidden_2, return_sequences=True))(dropout_1[seed_location])
-                #dropout_2[seed_location] = keras.layers.Dropout(0.2)(hidden_2)
+                #dropout_2[seed_location] = keras.layers.Dropout(dropout_rate)(hidden_2)
                 outputs[seed_location] = keras.layers.TimeDistributed( keras.layers.Dense(width+1, activation='softmax'))(hidden_2[seed_location])
             elif ('LSTMx2' in model_structure) and ('Dropout' not in model_structure):
                 hidden_2[seed_location] = keras.layers.Bidirectional(keras.layers.LSTM(n_hidden_2, return_sequences=True))(hidden_1[seed_location])
@@ -415,7 +417,7 @@ class Clusterer(BaseEstimator):
         for seed_location in ['front','middle','back']:
             self.history[seed_location] = self.model[seed_location].fit(
                 self.train_input[seed_location], self.train_target[seed_location],
-                batch_size=self.batch_size, epochs=self.n_epochs,
+                batch_size=self.batch_size, epochs=self.n_epochs, callbacks=[callback],
                 validation_split=self.val_frac)
             if callback.stopped_epoch<min_epochs: min_epochs=callback.stopped_epoch
         if self.n_epochs>min_epochs: self.n_epochs=min_epochs
