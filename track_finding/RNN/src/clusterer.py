@@ -411,12 +411,14 @@ class Clusterer(BaseEstimator):
         print('Starting training...')
         ## callback to optimize when training is stopped
         callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+        min_epochs=self.n_epochs
         for seed_location in ['front','middle','back']:
             self.history[seed_location] = self.model[seed_location].fit(
                 self.train_input[seed_location], self.train_target[seed_location],
                 batch_size=self.batch_size, epochs=self.n_epochs,
                 validation_split=self.val_frac)
-            if callback.stopped_epoch<self.n_epochs: self.n_epochs = callback.stopped_epoch
+            if callback.stopped_epoch<min_epochs: min_epochs=callback.stopped_epoch
+        if self.n_epochs>min_epochs: self.n_epochs=min_epochs
       
     def prepare_event_for_prediction(self, evt_hits):
         """

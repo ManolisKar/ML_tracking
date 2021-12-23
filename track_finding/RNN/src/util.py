@@ -48,6 +48,7 @@ def display_event(detector, straw_hits=None, track_ids=None, figsize=(15, 8)):
 
 def draw_train_history(history, draw_val=True, figsize=(12,5)):
     """Make plots of training and validation losses and accuracies"""
+    print('history : ', history)
     for seed_location in ['front','middle','back']:
         plt.figure(figsize=figsize)
         # Plot loss
