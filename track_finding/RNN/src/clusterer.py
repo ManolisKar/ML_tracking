@@ -46,6 +46,7 @@ class Clusterer(BaseEstimator):
     def build_model(self, 
                     model_structure='LSTMx2_Dropout',
                     loss='binary_crossentropy',## the HEPTrkX code was using categorical_ce
+                    activation_func='softmax', 
                     optimizer='Nadam', metrics=['accuracy']):
         n_hidden=self.hidden_dim
         n_hidden_2=self.hidden_dim_2
@@ -58,24 +59,24 @@ class Clusterer(BaseEstimator):
         for seed_location in ['front','middle','back']:
 
             ##bi-directional LSTM layer:
-            hidden_1[seed_location] = keras.layers.Bidirectional(keras.layers.LSTM(n_hidden, return_sequences=True))(inputs)
+            hidden_1[seed_location] = keras.layers.Bidirectional(keras.layers.LSTM(n_hidden, return_sequences=True, activation='softmax'))(inputs)
             ## could try adding more LSTM layers, with dropout inbetween to prevent overfitting
             if ('LSTMx2' in model_structure) and ('Dropoutx2' in model_structure):
                 dropout_1[seed_location] = keras.layers.Dropout(dropout_rate)(hidden_1[seed_location])
                 hidden_2[seed_location] = keras.layers.Bidirectional(keras.layers.LSTM(n_hidden_2, return_sequences=True))(dropout_1[seed_location])
                 ## for some very weird reason, adding the 2nd dropout layer crashes on my machine...
                 dropout_2[seed_location] = keras.layers.Dropout(dropout_rate)(hidden_2)
-                outputs[seed_location] = keras.layers.TimeDistributed( keras.layers.Dense(width+1, activation='softmax'))(dropout_2[seed_location])
+                outputs[seed_location] = keras.layers.TimeDistributed( keras.layers.Dense(width+1, activation=activation_func))(dropout_2[seed_location])
             elif ('LSTMx2' in model_structure) and ('Dropout' in model_structure):
                 dropout_1[seed_location] = keras.layers.Dropout(dropout_rate)(hidden_1[seed_location])
                 hidden_2[seed_location] = keras.layers.Bidirectional(keras.layers.LSTM(n_hidden_2, return_sequences=True))(dropout_1[seed_location])
                 #dropout_2[seed_location] = keras.layers.Dropout(dropout_rate)(hidden_2)
-                outputs[seed_location] = keras.layers.TimeDistributed( keras.layers.Dense(width+1, activation='softmax'))(hidden_2[seed_location])
+                outputs[seed_location] = keras.layers.TimeDistributed( keras.layers.Dense(width+1, activation=activation_func))(hidden_2[seed_location])
             elif ('LSTMx2' in model_structure) and ('Dropout' not in model_structure):
                 hidden_2[seed_location] = keras.layers.Bidirectional(keras.layers.LSTM(n_hidden_2, return_sequences=True))(hidden_1[seed_location])
-                outputs[seed_location] = keras.layers.TimeDistributed( keras.layers.Dense(width+1, activation='softmax'))(hidden_2[seed_location])
+                outputs[seed_location] = keras.layers.TimeDistributed( keras.layers.Dense(width+1, activation=activation_func))(hidden_2[seed_location])
             else:
-                outputs[seed_location] = hidden_1[seed_location]
+                outputs[seed_location] = keras.layers.TimeDistributed( keras.layers.Dense(width+1, activation=activation_func))(hidden_1[seed_location])
 
             self.model[seed_location] = keras.Model(inputs, outputs[seed_location])
             self.model[seed_location].compile(loss=loss, optimizer=optimizer, metrics=metrics)            
@@ -412,7 +413,7 @@ class Clusterer(BaseEstimator):
         self.prepare_training_data_multiseed(evts_hits, evts_ids)
         print('Starting training...')
         ## callback to optimize when training is stopped
-        callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+        callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
         min_epochs=self.n_epochs
         for seed_location in ['front','middle','back']:
             self.history[seed_location] = self.model[seed_location].fit(

@@ -285,8 +285,8 @@ def raw_score(tracker_NN, evts_hits, evts_ids, selection_threshold=0.7, draw_out
                         nhits_wrong+=1
                 n_correct[seed_location]+=nhits_correct
                 n_wrong[seed_location]+=nhits_wrong
-                predicted_correct[seed_location]+=[nhits_correct/nhits_predict]
-                predicted_wrong[seed_location]+=[nhits_wrong/nhits_predict]
+                if nhits_predict>0: predicted_correct[seed_location]+=[nhits_correct/nhits_predict]
+                if nhits_predict>0: predicted_wrong[seed_location]+=[nhits_wrong/nhits_predict]
           
     ## Processed all seeds. Final results:
     print("Total unpure seeds found :: %d (out of %d)" % (n_seeds_unpure,n_seeds_total))

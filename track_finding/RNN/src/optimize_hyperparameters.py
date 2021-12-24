@@ -24,7 +24,9 @@ outdir=args.outdir
 
 
 def get_accuracy_scores(model_structure='LSTMx2_Dropout', 
-                        hidden_dim=100, hidden_dim_2=0, dropout_rate=0.2,
+                        hidden_dim=100, hidden_dim_2=0, 
+                        activation_func='softmax', optimizer='Nadam',
+                        dropout_rate=0.2,
                         batch_size=100, n_epochs=50, 
                         outfile_name=None):
 
@@ -36,13 +38,13 @@ def get_accuracy_scores(model_structure='LSTMx2_Dropout',
     tracker_NN=clusterer.Clusterer(detector=tracker, 
                                 hidden_dim=hidden_dim, hidden_dim_2=hidden_dim_2, dropout_rate=dropout_rate,
                                 batch_size=batch_size, n_epochs=n_epochs_local, val_frac=0.1)
-    tracker_NN.build_model(model_structure=model_structure)
+    tracker_NN.build_model(model_structure=model_structure, activation_func=activation_func, optimizer=optimizer)
     n_epochs_local=tracker_NN.n_epochs
 
     ### Train
     from sklearn.model_selection import train_test_split
     ##### **** just for testing of callback -- remove the :500
-    evts_hits_train, evts_hits_valid, evts_ids_train, evts_ids_valid = train_test_split(evts_hits[:500],evts_ids[:500], train_size=0.8)
+    evts_hits_train, evts_hits_valid, evts_ids_train, evts_ids_valid = train_test_split(evts_hits,evts_ids, train_size=0.8)
     tracker_NN.fit(evts_hits_train, evts_ids_train)
     #util.draw_train_history(tracker_NN.history)
     end_time=time.perf_counter()
@@ -85,6 +87,8 @@ def get_accuracy_scores(model_structure='LSTMx2_Dropout',
         outfile = open(outfile_name,'wb')
         hyperparameters={}
         hyperparameters['model_structure']=model_structure
+        hyperparameters['activation_func']=activation_func
+        hyperparameters['optimizer']=optimizer
         hyperparameters['hidden_dim']=hidden_dim
         hyperparameters['hidden_dim_2']=hidden_dim_2
         hyperparameters['dropout_rate']=dropout_rate
@@ -106,8 +110,9 @@ def get_accuracy_scores(model_structure='LSTMx2_Dropout',
 
 ## Read in synthetic events
 import pickle
-synthetic_dir='/Users/ekargian/Library/Mobile Documents/com~apple~CloudDocs/Documents/g-2/Trackers/ML_tracking/synthetic_data/pkl/'
-rnn_dir='/Users/ekargian/Library/Mobile Documents/com~apple~CloudDocs/Documents/g-2/Trackers/ML_tracking/track_finding/RNN'
+ml_tracking_dir=os.environ['ML_TRACKING']
+synthetic_dir=ml_tracking_dir+'/synthetic_data/pkl/'
+rnn_dir=ml_tracking_dir+'/track_finding/RNN'
 events_file=open(synthetic_dir+'synthetic_events.pkl','rb')
 evts_hits,evts_ids = pickle.load(events_file,encoding='latin1')
 if 'synthetic' in synthetic_dir:
@@ -123,9 +128,13 @@ Iterate with randomly different hyper-parameter choices.
 Get accuracy and performance scores in each iteration.
 '''
 model_structures=['LSTMx2','LSTMx2_Dropout','LSTM'] #'LSTMx2_Dropoutx2
+activation_funcs=['softmax','relu']
+optimizers=['Nadam','Adam','Adagrad','RMSprop','SGD']
 
-for i in range(N):
+for i in range(2,N):
     model_structure=random.choice(model_structures)
+    activation_func=random.choice(activation_funcs)
+    optimizer=random.choice(optimizers)
     hidden_dim=random.randint(20,300)
     hidden_dim_2=random.randint(20,300)
     if 'Dropout' in model_structure: dropout_rate=random.uniform(0.01,0.4)
@@ -134,12 +143,15 @@ for i in range(N):
     outfile_name=outdir+'/performance_%d.pkl'%i
 
     print('model structure: ', model_structure)
+    print('activation func: ', activation_func)
+    print('optimizer: ', optimizer)
     print('hidden_dim: ', hidden_dim)
     print('hidden_dim_2: ', hidden_dim_2)
     print('dropout_rate: ', dropout_rate)
     print('batch_size: ', batch_size)
     get_accuracy_scores(model_structure=model_structure, 
             hidden_dim=hidden_dim, hidden_dim_2=hidden_dim_2, 
+            activation_func=activation_func, optimizer=optimizer,
             batch_size=batch_size, outfile_name=outfile_name)
 
 
