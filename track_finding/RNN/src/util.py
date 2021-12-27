@@ -293,10 +293,12 @@ def raw_score(tracker_NN, evts_hits, evts_ids, selection_threshold=0.7, draw_out
     raw_scores={}
     for seed_location in ['front','middle','back']:
         print('For %s seeds:'%seed_location)
-        accuracy_all=100*n_track_correct[seed_location]/n_track_hits[seed_location]
-        error_returned=100*n_wrong[seed_location]/n_predicted[seed_location]
+        if n_track_hits[seed_location]==0: accuracy_all=np.nan
+        else: accuracy_all=100*n_track_correct[seed_location]/n_track_hits[seed_location]
+        if n_predicted[seed_location]==0: error_returned=np.nan
+        else: error_returned=100*n_wrong[seed_location]/n_predicted[seed_location]
         print('Accurately found fraction of track hits :: ', accuracy_all)
-        print('Accurately predicted fraction of found hits :: ', 100*n_correct[seed_location]/n_predicted[seed_location])
+        #print('Accurately predicted fraction of found hits :: ', 100*n_correct[seed_location]/n_predicted[seed_location])
         print('Wrongly predicted fraction of found tracks :: ', error_returned)
         raw_scores[seed_location]=[accuracy_all,error_returned]
         if draw_output:

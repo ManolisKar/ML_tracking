@@ -131,7 +131,7 @@ model_structures=['LSTMx2','LSTMx2_Dropout','LSTM'] #'LSTMx2_Dropoutx2
 activation_funcs=['softmax','relu']
 optimizers=['Nadam','Adam','Adagrad','RMSprop','SGD']
 
-for i in range(2,N):
+for i in range(8,N):
     model_structure=random.choice(model_structures)
     activation_func=random.choice(activation_funcs)
     optimizer=random.choice(optimizers)
