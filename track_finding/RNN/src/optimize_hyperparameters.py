@@ -24,8 +24,9 @@ outdir=args.outdir
 
 
 def get_accuracy_scores(model_structure='LSTMx2_Dropout', 
-                        hidden_dim=100, hidden_dim_2=0, 
-                        activation_func='softmax', optimizer='Nadam',
+                        hidden_dim=100, hidden_dim_2=0, dense_dim=100,
+                        activation_func='softmax', dense_activation_func='relu',
+                        optimizer='Nadam',
                         dropout_rate=0.2,
                         batch_size=100, n_epochs=50, 
                         outfile_name=None):
@@ -36,16 +37,17 @@ def get_accuracy_scores(model_structure='LSTMx2_Dropout',
     if hidden_dim_2==0: hidden_dim_2=hidden_dim
     n_epochs_local=n_epochs ## we may modify this, so let's avoid modifying the global -- and avoid the UnboundLocalError
     tracker_NN=clusterer.Clusterer(detector=tracker, 
-                                hidden_dim=hidden_dim, hidden_dim_2=hidden_dim_2, dropout_rate=dropout_rate,
+                                hidden_dim=hidden_dim, hidden_dim_2=hidden_dim_2, dense_dim=dense_dim, dropout_rate=dropout_rate,
                                 batch_size=batch_size, n_epochs=n_epochs_local, val_frac=0.1)
-    tracker_NN.build_model(model_structure=model_structure, activation_func=activation_func, optimizer=optimizer)
-    n_epochs_local=tracker_NN.n_epochs
+    tracker_NN.build_model(model_structure=model_structure, activation_func=activation_func, 
+                            dense_activation_func=dense_activation_func, optimizer=optimizer)
 
     ### Train
     from sklearn.model_selection import train_test_split
     ##### **** just for testing of callback -- remove the :500
     evts_hits_train, evts_hits_valid, evts_ids_train, evts_ids_valid = train_test_split(evts_hits,evts_ids, train_size=0.8)
     tracker_NN.fit(evts_hits_train, evts_ids_train)
+    n_epochs_local=tracker_NN.n_epochs
     #util.draw_train_history(tracker_NN.history)
     end_time=time.perf_counter()
     print('Training time (s) : ', end_time-start_time)
@@ -127,31 +129,36 @@ evts_ids_test=evts_ids_2track[:1000]
 Iterate with randomly different hyper-parameter choices.
 Get accuracy and performance scores in each iteration.
 '''
-model_structures=['LSTMx2','LSTMx2_Dropout','LSTM'] #'LSTMx2_Dropoutx2
-activation_funcs=['softmax','relu']
-optimizers=['Nadam','Adam','Adagrad','RMSprop','SGD']
+model_structures=['LSTMx2','LSTMx2_Dropout','LSTMx2_ExtraDense','LSTMx2_Dropout_ExtraDense','LSTM_ExtraDense','LSTM_Dropout_ExtraDense']#,'LSTM','LSTMx2_Dropoutx2]
+dense_activation_funcs=['relu','sigmoid','softplus','tanh']
+optimizers=['Nadam','Adam','RMSprop','Adagrad']#,'SGD']
 
-for i in range(8,N):
+for i in range(N):
     model_structure=random.choice(model_structures)
-    activation_func=random.choice(activation_funcs)
+    dense_activation_func=random.choice(dense_activation_funcs)
     optimizer=random.choice(optimizers)
     hidden_dim=random.randint(20,300)
-    hidden_dim_2=random.randint(20,300)
+    if 'LSTMx2' in model_structure: hidden_dim_2=random.randint(20,300)
+    else: hidden_dim_2=0
     if 'Dropout' in model_structure: dropout_rate=random.uniform(0.01,0.4)
     else: dropout_rate=0
+    if 'ExtraDense' in model_structure: dense_dim=random.randint(20,1000)
+    else: dense_dim=0
     batch_size=random.randint(5,400)
-    outfile_name=outdir+'/performance_%d.pkl'%i
+    outfile_name=outdir+'/trials_220105/performance_%d.pkl'%i
 
     print('model structure: ', model_structure)
-    print('activation func: ', activation_func)
+    print('dense activation func: ', dense_activation_func)
     print('optimizer: ', optimizer)
     print('hidden_dim: ', hidden_dim)
     print('hidden_dim_2: ', hidden_dim_2)
+    print('dense_dim: ', dense_dim)
     print('dropout_rate: ', dropout_rate)
     print('batch_size: ', batch_size)
     get_accuracy_scores(model_structure=model_structure, 
-            hidden_dim=hidden_dim, hidden_dim_2=hidden_dim_2, 
-            activation_func=activation_func, optimizer=optimizer,
-            batch_size=batch_size, outfile_name=outfile_name)
+            hidden_dim=hidden_dim, hidden_dim_2=hidden_dim_2, dense_dim=dense_dim, 
+            dense_activation_func=dense_activation_func, optimizer=optimizer,
+            batch_size=batch_size, dropout_rate=dropout_rate, n_epochs=1,
+            outfile_name=outfile_name)
 
 

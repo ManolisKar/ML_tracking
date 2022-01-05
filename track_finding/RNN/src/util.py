@@ -374,7 +374,7 @@ def score_function(true_ids, predicted_ids, verbose=False):
         return 0
     
     accuracy_full=100*n_trackhits_correct/n_trackhits
-    error_returned=1-n_predicted_correct/n_predicted
+    error_returned=100*(1-n_predicted_correct/n_predicted)
     print('Fraction of track hits identified correctly: ', accuracy_full)
     print('Fractional error (wrongly assigned hits): ', error_returned)
     

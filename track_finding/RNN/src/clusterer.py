@@ -9,8 +9,8 @@ from statistics import mode
 
 class Clusterer(BaseEstimator):
     def __init__(self, detector,
-                 hidden_dim=50, hidden_dim_2=50, dropout_rate=0.2,
-                 batch_size=128, n_epochs=5, 
+                 hidden_dim=50, hidden_dim_2=50, dense_dim=100,
+                 dropout_rate=0.2, batch_size=128, n_epochs=5, 
                  val_frac=0.2):
         """
         LSTM model example.
@@ -18,6 +18,7 @@ class Clusterer(BaseEstimator):
         """
         self.hidden_dim = hidden_dim
         self.hidden_dim_2 = hidden_dim_2
+        self.dense_dim = dense_dim
         self.dropout_rate = dropout_rate
         self.batch_size = batch_size
         self.n_epochs = n_epochs
@@ -46,16 +47,17 @@ class Clusterer(BaseEstimator):
     def build_model(self, 
                     model_structure='LSTMx2_Dropout',
                     loss='binary_crossentropy',## the HEPTrkX code was using categorical_ce
-                    activation_func='softmax', 
+                    activation_func='softmax', dense_activation_func='relu',
                     optimizer='Nadam', metrics=['accuracy']):
         n_hidden=self.hidden_dim
         n_hidden_2=self.hidden_dim_2
+        n_dense=self.dense_dim
         dropout_rate=self.dropout_rate
         length=self.detector.n_layers
         width=self.nstraws_perlayer
         ## flatten the hits/seeds for each straw into a single dimension of 2*width elements
         inputs = keras.layers.Input(shape=(length, 2*width))
-        hidden_1, dropout_1, hidden_2, outputs = {},{},{},{}
+        hidden_1, dropout_1, hidden_2, extra_dense, outputs = {},{},{},{},{}
         for seed_location in ['front','middle','back']:
 
             ##bi-directional LSTM layer:
@@ -67,6 +69,22 @@ class Clusterer(BaseEstimator):
                 ## for some very weird reason, adding the 2nd dropout layer crashes on my machine...
                 dropout_2[seed_location] = keras.layers.Dropout(dropout_rate)(hidden_2)
                 outputs[seed_location] = keras.layers.TimeDistributed( keras.layers.Dense(width+1, activation=activation_func))(dropout_2[seed_location])
+            elif ('LSTMx2' in model_structure) and ('Dropout' in model_structure) and ('ExtraDense' in model_structure):
+                dropout_1[seed_location] = keras.layers.Dropout(dropout_rate)(hidden_1[seed_location])
+                hidden_2[seed_location] = keras.layers.Bidirectional(keras.layers.LSTM(n_hidden_2, return_sequences=True))(dropout_1[seed_location])
+                extra_dense[seed_location] = keras.layers.TimeDistributed( keras.layers.Dense(n_dense, activation=dense_activation_func))(hidden_2[seed_location])
+                outputs[seed_location] = keras.layers.Dense(width+1, activation='softmax')(extra_dense[seed_location])
+            elif ('LSTM' in model_structure) and ('Dropout' in model_structure) and ('ExtraDense' in model_structure):
+                dropout_1[seed_location] = keras.layers.Dropout(dropout_rate)(hidden_1[seed_location])
+                extra_dense[seed_location] = keras.layers.TimeDistributed( keras.layers.Dense(n_dense, activation=dense_activation_func))(dropout_1[seed_location])
+                outputs[seed_location] = keras.layers.Dense(width+1, activation='softmax')(extra_dense[seed_location])
+            elif ('LSTMx2' in model_structure) and ('Dropout' not in model_structure) and ('ExtraDense' in model_structure):
+                hidden_2[seed_location] = keras.layers.Bidirectional(keras.layers.LSTM(n_hidden_2, return_sequences=True))(hidden_1[seed_location])
+                extra_dense[seed_location] = keras.layers.TimeDistributed( keras.layers.Dense(n_dense, activation=dense_activation_func))(hidden_2[seed_location])
+                outputs[seed_location] = keras.layers.Dense(width+1, activation='softmax')(extra_dense[seed_location])
+            elif ('LSTM' in model_structure) and ('Dropout' not in model_structure) and ('ExtraDense' in model_structure):
+                extra_dense[seed_location] = keras.layers.TimeDistributed( keras.layers.Dense(n_dense, activation=dense_activation_func))(hidden_1[seed_location])
+                outputs[seed_location] = keras.layers.Dense(width+1, activation='softmax')(extra_dense[seed_location])
             elif ('LSTMx2' in model_structure) and ('Dropout' in model_structure):
                 dropout_1[seed_location] = keras.layers.Dropout(dropout_rate)(hidden_1[seed_location])
                 hidden_2[seed_location] = keras.layers.Bidirectional(keras.layers.LSTM(n_hidden_2, return_sequences=True))(dropout_1[seed_location])
