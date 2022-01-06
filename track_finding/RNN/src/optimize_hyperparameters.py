@@ -50,7 +50,8 @@ def get_accuracy_scores(model_structure='LSTMx2_Dropout',
     n_epochs_local=tracker_NN.n_epochs
     #util.draw_train_history(tracker_NN.history)
     end_time=time.perf_counter()
-    print('Training time (s) : ', end_time-start_time)
+    train_time=end_time-start_time
+    print('Training time (s) : ', train_time)
 
     ### We can choose to save the model after fitting
     '''
@@ -70,18 +71,20 @@ def get_accuracy_scores(model_structure='LSTMx2_Dropout',
     start_time=time.perf_counter()
     raw_scores=util.raw_score(tracker_NN,evts_hits_test,evts_ids_test)
     end_time=time.perf_counter()
-    print('Time for raw scoring (s) : ', end_time-start_time)
+    raw_score_time=end_time-start_time
+    print('Time for raw scoring (s) : ', raw_score_time)
 
     ## Then score for accuracy/error after seed merging
     start_time=time.perf_counter()
     predicted_ids=seed_merging.predict_events(tracker_NN, evts_hits_test)#,verbose=1)
     full_score=util.score_function(evts_ids_test, predicted_ids )
     end_time=time.perf_counter()
+    full_score_time=end_time-start_time
     n_tracks=0
     for predicted_id in predicted_ids:
         n_tracks += np.max(predicted_id)
     print('Total tracks found: ', n_tracks)
-    print('Time for full scoring (s) : ', end_time-start_time)
+    print('Time for full scoring (s) : ', full_score_time)
 
     ## Output results
     if outfile_name is not None:
@@ -89,10 +92,11 @@ def get_accuracy_scores(model_structure='LSTMx2_Dropout',
         outfile = open(outfile_name,'wb')
         hyperparameters={}
         hyperparameters['model_structure']=model_structure
-        hyperparameters['activation_func']=activation_func
+        hyperparameters['dense_activation_func']=dense_activation_func
         hyperparameters['optimizer']=optimizer
         hyperparameters['hidden_dim']=hidden_dim
         hyperparameters['hidden_dim_2']=hidden_dim_2
+        hyperparameters['dense_dim']=dense_dim
         hyperparameters['dropout_rate']=dropout_rate
         hyperparameters['batch_size']=batch_size
         hyperparameters['n_epochs']=n_epochs_local
@@ -101,7 +105,10 @@ def get_accuracy_scores(model_structure='LSTMx2_Dropout',
             'hyperparameters':hyperparameters, 
             'raw_scores':raw_scores, 
             'full_score':full_score,
-            'n_tracks':n_tracks
+            'n_tracks':n_tracks,
+            'train_time':train_time,
+            'raw_score_time':raw_score_time,
+            'full_score_time':full_score_time
         }, 
         outfile
         )

@@ -431,7 +431,7 @@ class Clusterer(BaseEstimator):
         self.prepare_training_data_multiseed(evts_hits, evts_ids)
         print('Starting training...')
         ## callback to optimize when training is stopped
-        callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
+        callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=4, restore_best_weights=True)
         min_epochs=self.n_epochs
         for seed_location in ['front','middle','back']:
             self.history[seed_location] = self.model[seed_location].fit(
