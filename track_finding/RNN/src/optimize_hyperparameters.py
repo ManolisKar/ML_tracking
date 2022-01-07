@@ -152,7 +152,7 @@ for i in range(N):
     if 'ExtraDense' in model_structure: dense_dim=random.randint(20,1000)
     else: dense_dim=0
     batch_size=random.randint(5,400)
-    outfile_name=outdir+'/trials_220105/performance_%d.pkl'%i
+    outfile_name=outdir+'/performance_%d.pkl'%i
 
     print('model structure: ', model_structure)
     print('dense activation func: ', dense_activation_func)
