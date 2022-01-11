@@ -438,6 +438,8 @@ class Clusterer(BaseEstimator):
                 self.train_input[seed_location], self.train_target[seed_location],
                 batch_size=self.batch_size, epochs=self.n_epochs, callbacks=[callback],
                 validation_split=self.val_frac)
+            if self.history[seed_location].history['val_accuracy'][-1]<0.9:
+                raise ValueError('\nValidation accuracy too low, skip this trial...\n\n') 
             if callback.stopped_epoch<min_epochs: min_epochs=callback.stopped_epoch
         if self.n_epochs>min_epochs: self.n_epochs=min_epochs
       

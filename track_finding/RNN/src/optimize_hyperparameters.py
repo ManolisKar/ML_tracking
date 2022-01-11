@@ -162,10 +162,13 @@ for i in range(N):
     print('dense_dim: ', dense_dim)
     print('dropout_rate: ', dropout_rate)
     print('batch_size: ', batch_size)
-    get_accuracy_scores(model_structure=model_structure, 
-            hidden_dim=hidden_dim, hidden_dim_2=hidden_dim_2, dense_dim=dense_dim, 
-            dense_activation_func=dense_activation_func, optimizer=optimizer,
-            batch_size=batch_size, dropout_rate=dropout_rate, n_epochs=50,
-            outfile_name=outfile_name)
+    try:
+        get_accuracy_scores(model_structure=model_structure, 
+                hidden_dim=hidden_dim, hidden_dim_2=hidden_dim_2, dense_dim=dense_dim, 
+                dense_activation_func=dense_activation_func, optimizer=optimizer,
+                batch_size=batch_size, dropout_rate=dropout_rate, n_epochs=50,
+                outfile_name=outfile_name)
+    except ValueError as err:
+        print(err.args)
 
 
