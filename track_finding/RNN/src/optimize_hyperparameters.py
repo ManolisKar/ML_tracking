@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import time
 import pickle
 import random
+import gc
 
 import seeding
 import util
@@ -29,7 +30,8 @@ def get_accuracy_scores(model_structure='LSTMx2_Dropout',
                         optimizer='Nadam',
                         dropout_rate=0.2,
                         batch_size=100, n_epochs=50, 
-                        outfile_name=None):
+                        outfile_name=None,
+                        save_model=False):
 
     ### Build the NN
     start_time=time.perf_counter()
@@ -53,11 +55,10 @@ def get_accuracy_scores(model_structure='LSTMx2_Dropout',
     train_time=end_time-start_time
     print('Training time (s) : ', train_time)
 
-    ### We can choose to save the model after fitting
-    '''
-    for seed_location in ['front','middle','back']:
-        tracker_NN.model[seed_location].save(rnn_dir+'/saved_models/tracker_NN_%s_2112_multiseed.h5'%seed_location) 
-    '''
+    ### We can choose to save the model after
+    if save_model:
+        for seed_location in ['front','middle','back']:
+            tracker_NN.model[seed_location].save('model_%s.h5' % seed_location)
 
     ### Or just read an existing model (must have same model structure)
     '''
@@ -114,6 +115,9 @@ def get_accuracy_scores(model_structure='LSTMx2_Dropout',
         )
         outfile.close()
 
+    del tracker
+    del tracker_NN
+    gc.collect()
     return raw_scores, full_score, n_tracks
 
 
@@ -140,7 +144,7 @@ model_structures=['LSTMx2','LSTMx2_Dropout','LSTMx2_ExtraDense','LSTMx2_Dropout_
 dense_activation_funcs=['relu','sigmoid','softplus','tanh']
 optimizers=['Nadam','Adam','RMSprop','Adagrad']#,'SGD']
 
-for i in range(N):
+for i in range(0,N):
     model_structure=random.choice(model_structures)
     dense_activation_func=random.choice(dense_activation_funcs)
     optimizer=random.choice(optimizers)
