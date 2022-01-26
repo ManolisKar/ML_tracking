@@ -45,14 +45,13 @@ evts_hits_2track,evts_ids_2track = pickle.load(events_file,encoding='latin1')
 evts_hits_test=evts_hits_2track[:1000]
 evts_ids_test=evts_ids_2track[:1000]
     
-'''### Get accuracy metrics
+### Get accuracy metrics
 ## First the raw selection score
 start_time=time.perf_counter()
 raw_scores=util.raw_score(tracker_NN,evts_hits_test,evts_ids_test)
 end_time=time.perf_counter()
 raw_score_time=end_time-start_time
 print('Time for raw scoring (s) : ', raw_score_time)
-'''
 
 ## Then score for accuracy/error after seed merging
 start_time=time.perf_counter()
