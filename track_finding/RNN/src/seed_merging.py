@@ -40,14 +40,12 @@ def merge_golden_seeds(tracker_NN, model_input, #looseness, #model_prediction=np
     ## assign an ID to each seed, so that we can combine and delete them
     seed_ids=np.arange(n_seeds_total)
     
-    
     ### Stack all seed locations into single array, for ease of seed counting and id'ing
     selection_threshold = 0.6# + looseness*0.07    
     model_prediction_full = np.concatenate( (model_prediction['front'],model_prediction['middle'],model_prediction['back']) )
     model_input_full = np.concatenate( (model_input['front'],model_input['middle'],model_input['back']) )
     model_prediction_selected = np.zeros_like(model_prediction_full)
     model_prediction_selected[np.where( model_prediction_full>selection_threshold )] = 1
-    
     
     ## indicator whether input was modified
     modified_input=0
@@ -162,16 +160,17 @@ def merge_golden_seeds(tracker_NN, model_input, #looseness, #model_prediction=np
                 removed_seed_ids+=[merged_seed_id]
                 if verbose>1: print('removing merged seed %d with input:\n '%merged_seed_id, model_input_full[merged_seed_id])
                 ## turn on the seed indicator for this seed on the consolidated input
-                ## unnecessary if it won't be re-predicted?
-                seed_layers2,seed_hits2 = np.where(model_input_full[merged_seed_id][:,tracker_NN.nstraws_perlayer:] > 0)
-                seed_straws2 = model_input_full[merged_seed_id][seed_layers2,seed_hits2.astype(int)]-1              
+                ### ** unnecessary if it won't be re-predicted? ** 
+                ### skip turning on more seeds at input, remainder of this is commented out
+                #seed_layers2,seed_hits2 = np.where(model_input_full[merged_seed_id][:,tracker_NN.nstraws_perlayer:] > 0)
+                #seed_straws2 = model_input_full[merged_seed_id][seed_layers2,seed_hits2.astype(int)]-1              
                 ## note that hit_location is different at input of each seed
-                for i,seed_layer2 in enumerate(seed_layers2):
-                    seed_straw2=seed_straws2[i]
-                    if (seed_straw2+1) not in model_input_full[best_seed_id][seed_layer2]: continue
-                    seed_hit2=np.where(model_input_full[best_seed_id][seed_layer2]==seed_straw2+1)[0][0]
-                    model_input_full[best_seed_id][seed_layer2][tracker_NN.nstraws_perlayer+seed_hit2] = 1
-            if verbose>1: print('model input for best seed after this merge: \n', model_input_full[best_seed_id])
+                #for i,seed_layer2 in enumerate(seed_layers2):
+                #    seed_straw2=seed_straws2[i]
+                #    if (seed_straw2+1) not in model_input_full[best_seed_id][seed_layer2]: continue
+                #    seed_hit2=np.where(model_input_full[best_seed_id][seed_layer2]==seed_straw2+1)[0][0]
+                #    model_input_full[best_seed_id][seed_layer2][tracker_NN.nstraws_perlayer+seed_hit2] = 1
+            #if verbose>1: print('model input for best seed after this merge: \n', model_input_full[best_seed_id])
 
         new_accepted_ids += [best_seed_id]
 
@@ -268,7 +267,7 @@ def merge_silver_seeds(tracker_NN, model_input, looseness, #model_prediction=np.
     seed_ids=np.arange(n_seeds_total)    
     
     ## Selection based on prediction
-    selection_threshold=0.6# + looseness*0.05
+    selection_threshold=min(0.6+looseness*0.03,0.85)
     ### Stack all seed locations into single array, for ease of seed counting and id'ing
     model_prediction_full = np.concatenate( (model_prediction['front'],model_prediction['middle'],model_prediction['back']) )
     model_input_full = np.concatenate( (model_input['front'],model_input['middle'],model_input['back']) )
@@ -342,7 +341,7 @@ def merge_silver_seeds(tracker_NN, model_input, looseness, #model_prediction=np.
             hit_straw=hit_straws[i].astype(int)
             hit_id=hit_ids[i]
             ## Check if the corresponding output is less than a cutoff
-            cutoff=0.5+looseness*0.1
+            cutoff=min(0.5+looseness*0.1, 0.9)
             if (model_prediction_full[seed_id][hit_layer][hit_straw]<cutoff):
                 if verbose: print('Cutoff: Removing hit at (%d,%d)' % (hit_layer,hit_straw))
                 model_input_full[seed_id][hit_layer][hit_id] = 0
@@ -356,7 +355,7 @@ def merge_silver_seeds(tracker_NN, model_input, looseness, #model_prediction=np.
             print('rms prediction = ', prediction_rms)
             print('nhits_track = ', nhits_track)
 
-        silver_threshold = 0.93 - looseness*0.02
+        silver_threshold = max(0.93 - looseness*0.02, 0.85)
         if (prediction_min>silver_threshold):# & (prediction_rms<0.005) & (nhits_track>=6):
             ## Good track, but still some ambiguity
             ## don't assume that all its hits are necessarily correct
@@ -419,7 +418,7 @@ def merge_silver_seeds(tracker_NN, model_input, looseness, #model_prediction=np.
                 print('%d same hits overall '%n_hits_same)
                 print('%dpc fractional same hits '%(100*frac_hits_same))
 
-            if (n_seed_same>=3-looseness*0.1) & (n_hits_same>=7-looseness):
+            if (n_seed_same>=max(3-looseness*0.5,2)) & (n_hits_same>=max(7-looseness,5)):
                 ## Since the original seed is of good quality, we assume that this seed is part of the same track.
                 ## Remove this seed_id2 from further consideration.
                 ## We still don't assume that all its hits are correctly assigned
@@ -444,15 +443,16 @@ def merge_silver_seeds(tracker_NN, model_input, looseness, #model_prediction=np.
                 if verbose>1: print('removing merged seed ',merged_seed_id)
                 ## turn on the seed indicator for this seed on the consolidated input
                 ## unnecessary if it won't be re-predicted?
-                seed_layers2,seed_hits2 = np.where(model_input_full[merged_seed_id][:,tracker_NN.nstraws_perlayer:] > 0)
-                seed_straws2 = model_input_full[merged_seed_id][seed_layers2,seed_hits2.astype(int)]-1              
-                ## note that hit_location is different at input of each seed
-                for i,seed_layer2 in enumerate(seed_layers2):
-                    seed_straw2=seed_straws2[i]
-                    if (seed_straw2+1) not in model_input_full[best_seed_id][seed_layer2]: continue
-                    seed_hit2=np.where(model_input_full[best_seed_id][seed_layer2]==seed_straw2+1)[0][0]
-                    model_input_full[best_seed_id][seed_layer2][tracker_NN.nstraws_perlayer+seed_hit2] = 1
-            if verbose>1: print('model input for best seed after this merge: \n', model_input_full[best_seed_id])
+                ### *** skip turning on more seeds, unnecessary
+                #seed_layers2,seed_hits2 = np.where(model_input_full[merged_seed_id][:,tracker_NN.nstraws_perlayer:] > 0)
+                #seed_straws2 = model_input_full[merged_seed_id][seed_layers2,seed_hits2.astype(int)]-1              
+                ### note that hit_location is different at input of each seed
+                #for i,seed_layer2 in enumerate(seed_layers2):
+                #    seed_straw2=seed_straws2[i]
+                #    if (seed_straw2+1) not in model_input_full[best_seed_id][seed_layer2]: continue
+                #    seed_hit2=np.where(model_input_full[best_seed_id][seed_layer2]==seed_straw2+1)[0][0]
+                #    model_input_full[best_seed_id][seed_layer2][tracker_NN.nstraws_perlayer+seed_hit2] = 1
+            #if verbose>1: print('model input for best seed after this merge: \n', model_input_full[best_seed_id])
 
         new_accepted_ids += [best_seed_id]
 
@@ -464,7 +464,7 @@ def merge_silver_seeds(tracker_NN, model_input, looseness, #model_prediction=np.
             ihit = np.where(model_input_full[best_seed_id][ilayer]==istraw+1)[0][0]
             ## this hit is high-quality if its output is high enough among all merged seeds
             ## or perhaps allow some ambiguity from 1 seed at most
-            high_threshold=0.90 - looseness*0.01
+            high_threshold=max(0.90 - looseness*0.01,85)
             if np.sum(model_prediction_full[merged_seeds, ilayer, istraw]>high_threshold)>=len(merged_seeds)-1:
                 if verbose: print('Good hit at (%d,%d)' % (ilayer,istraw))
                 ## Set it to 0 at other inputs, except if other seeds have selected it with high-ish output also
@@ -612,7 +612,7 @@ def merge_seeds(tracker_NN, evt_hits, verbose=False):
     looseness = 0
     removed_seed_ids=[]
     good_track_ids=[]
-    while (looseness<3):
+    while(1): #while (looseness<3):
         ## iterate with increasing looseness
 
         ## Look for golden tracks, merge their seeds, remove their hits from other inputs
@@ -654,6 +654,8 @@ def merge_seeds(tracker_NN, evt_hits, verbose=False):
 
         ## loosen criteria for next iteration
         looseness+=1
+
+        if (looseness>=3 and modified_input==0): break
 
     ## if we make it out here without final solution, then just return the good tracks we found already
     return master_prediction, good_track_ids

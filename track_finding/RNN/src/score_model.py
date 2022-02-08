@@ -66,5 +66,5 @@ n_tracks=0
 for predicted_id in predicted_ids:
     n_tracks += np.max(predicted_id)
 print('Total tracks found: ', n_tracks)
-print('Time for prediction (s) : ', prediction_time)
+print('Time for prediction (s) : ', predict_time)
 print('Time for full scoring (s) : ', full_score_time)
