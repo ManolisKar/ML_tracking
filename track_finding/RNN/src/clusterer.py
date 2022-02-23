@@ -24,7 +24,7 @@ class Clusterer(BaseEstimator):
         self.n_epochs = n_epochs
         self.val_frac = val_frac
         self.detector=detector
-        self.nstraws_perlayer = 6 # max number of straw hits per layer (including "0", ie no hits from the track in this layer)
+        self.nstraws_perlayer = 4 # max number of straw hits per layer (including "0", ie no hits from the track in this layer)
         
         if False: '''
         self.model=None
@@ -142,7 +142,7 @@ class Clusterer(BaseEstimator):
             allhits_layers,allhits_straws=np.where(evts_hits[i_evt]>0)
 
             ## Get all seeds in this event
-            seeds_xy, seeds_array=seeding.make_real_seeds(evts_ids[i_evt])
+            seeds_xy, seeds_array=seeding.make_real_seeds(evts_hits[i_evt])
             if len(seeds_xy)==0: continue  
             
             ## Step through each module
@@ -262,7 +262,7 @@ class Clusterer(BaseEstimator):
             allhits_layers,allhits_straws=np.where(evts_hits[i_evt]>0)
 
             ## Get all seeds in this event
-            seeds_xy, seeds_array=seeding.make_real_seeds(evts_ids[i_evt])
+            seeds_xy, seeds_array=seeding.make_real_seeds(evts_hits[i_evt])
             if len(seeds_xy)==0: continue  
             
             ## Step through each module
