@@ -9,9 +9,9 @@ from statistics import mode
 
 class Clusterer(BaseEstimator):
     def __init__(self, detector,
-                 hidden_dim=50, hidden_dim_2=50, dense_dim=100,
-                 dropout_rate=0.2, batch_size=128, n_epochs=5, 
-                 val_frac=0.2):
+                hidden_dim_1=100, hidden_dim_2=100, dense_dim=100, 
+                batch_size=128, n_epochs=5, dropout_rate=0.15,
+                val_frac=0.1):
         """
         LSTM model example.
         TODO: fill in more details.
