@@ -24,7 +24,7 @@ class Clusterer(BaseEstimator):
         self.dropout_rate = dropout_rate
         self.val_frac = val_frac
         self.detector=detector
-        self.nstraws_perlayer = 4 # max number of straw hits per layer (including "0", ie no hits from the track in this layer)
+        self.nstraws_perlayer = 5 # max number of straw hits per layer (including "0", ie no hits from the track in this layer)
         
         if False: '''
         self.model=None
@@ -200,7 +200,10 @@ class Clusterer(BaseEstimator):
                     ilayers,istraws=allhits_layers[not_module_mask], allhits_straws[not_module_mask] # this excludes hits from the same module as the seed 
                     for i,ilayer in enumerate(ilayers):
                         istraw=istraws[i]
-                        ihit_index = np.random.choice( np.array( np.where(ihit_perlayer[ilayer]==0)[0] ))
+                        if len( np.where(ihit_perlayer[ilayer]==0)[0] )==0:
+                            print('Oops! No room left in hit index, too many hits in layer')
+                            ihit_index=2
+                        else: ihit_index = np.random.choice( np.array( np.where(ihit_perlayer[ilayer]==0)[0] ))
                         holder_input[seed_location][n_seeds[seed_location]][ilayer][ihit_index] = istraw+1
                         if evts_ids[i_evt][ilayer][istraw]==seed_id:
                             holder_target[seed_location][n_seeds[seed_location]][ilayer][ihit_index+1] = 1
@@ -289,7 +292,10 @@ class Clusterer(BaseEstimator):
                     for i,ilayer in enumerate(seed_layers):
                         istraw=seed_straws[i]
                         ## get the randomized input index for this hit
-                        ihit_index = np.random.choice( np.array( np.where(ihit_perlayer[ilayer]==0)[0] ))
+                        if len( np.where(ihit_perlayer[ilayer]==0)[0] )==0:
+                            print('Oops! No room left in hit index, too many hits in layer')
+                            ihit_index=2
+                        else: ihit_index = np.random.choice( np.array( np.where(ihit_perlayer[ilayer]==0)[0] ))
                         ## turn on both hits and seeds elements
                         holder_input[seed_location][n_inputs[seed_location]][ilayer][ihit_index] = istraw+1
                         holder_input[seed_location][n_inputs[seed_location]][ilayer][self.nstraws_perlayer+ihit_index] = 1
@@ -320,7 +326,10 @@ class Clusterer(BaseEstimator):
                     ilayers,istraws=allhits_layers[not_module_mask], allhits_straws[not_module_mask] # this excludes hits from the same module as the seed 
                     for i,ilayer in enumerate(ilayers):
                         istraw=istraws[i]
-                        ihit_index = np.random.choice( np.array( np.where(ihit_perlayer[ilayer]==0)[0] ))
+                        if len( np.where(ihit_perlayer[ilayer]==0)[0] )==0:
+                            print('Oops! No room left in hit index, too many hits in layer')
+                            ihit_index=2
+                        else: ihit_index = np.random.choice( np.array( np.where(ihit_perlayer[ilayer]==0)[0] ))
                         holder_input[seed_location][n_inputs[seed_location]][ilayer][ihit_index] = istraw+1
                         if evts_ids[i_evt][ilayer][istraw]==seed_id:
                             holder_target[seed_location][n_inputs[seed_location]][ilayer][ihit_index+1] = 1
@@ -409,13 +418,11 @@ class Clusterer(BaseEstimator):
                     ## finally copy the target
                     holder_target[seed_location][n_inputs[seed_location]+n_extra_inputs] = holder_target[seed_location][n_inputs[seed_location]]
 
-
                     ## finished processing this seed, increment
                     #print('continuing after 3 extra seeds')
                     n_inputs[seed_location] += 4
                     if (n_inputs[seed_location] % print_freq == 0):
                         print (' Processing seed #%d in detector-%s' % (n_inputs[seed_location], seed_location) )
-
 
         print ('\nTotal seeds processed per location: ', n_inputs)
               
@@ -427,8 +434,8 @@ class Clusterer(BaseEstimator):
             
 
     def fit(self, evts_hits, evts_ids):
-        #self.prepare_training_data_NoDF(evts_hits, evts_ids)
-        self.prepare_training_data_multiseed(evts_hits, evts_ids)
+        self.prepare_training_data(evts_hits, evts_ids)
+        #self.prepare_training_data_multiseed(evts_hits, evts_ids)
         print('Starting training...')
         ## callback to optimize when training is stopped
         callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
