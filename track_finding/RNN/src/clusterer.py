@@ -16,12 +16,12 @@ class Clusterer(BaseEstimator):
         LSTM model example.
         TODO: fill in more details.
         """
-        self.hidden_dim = hidden_dim
+        self.hidden_dim_1 = hidden_dim_1
         self.hidden_dim_2 = hidden_dim_2
         self.dense_dim = dense_dim
-        self.dropout_rate = dropout_rate
         self.batch_size = batch_size
         self.n_epochs = n_epochs
+        self.dropout_rate = dropout_rate
         self.val_frac = val_frac
         self.detector=detector
         self.nstraws_perlayer = 4 # max number of straw hits per layer (including "0", ie no hits from the track in this layer)
@@ -49,7 +49,7 @@ class Clusterer(BaseEstimator):
                     loss='binary_crossentropy',## the HEPTrkX code was using categorical_ce
                     activation_func='softmax', dense_activation_func='relu',
                     optimizer='Nadam', metrics=['accuracy']):
-        n_hidden=self.hidden_dim
+        n_hidden_1=self.hidden_dim_1
         n_hidden_2=self.hidden_dim_2
         n_dense=self.dense_dim
         dropout_rate=self.dropout_rate
@@ -61,7 +61,7 @@ class Clusterer(BaseEstimator):
         for seed_location in ['front','middle','back']:
 
             ##bi-directional LSTM layer:
-            hidden_1[seed_location] = keras.layers.Bidirectional(keras.layers.LSTM(n_hidden, return_sequences=True, activation='softmax'))(inputs)
+            hidden_1[seed_location] = keras.layers.Bidirectional(keras.layers.LSTM(n_hidden_1, return_sequences=True, activation='softmax'))(inputs)
             ## could try adding more LSTM layers, with dropout inbetween to prevent overfitting
             if ('LSTMx2' in model_structure) and ('Dropoutx2' in model_structure):
                 dropout_1[seed_location] = keras.layers.Dropout(dropout_rate)(hidden_1[seed_location])
