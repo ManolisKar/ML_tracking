@@ -9,9 +9,9 @@ from statistics import mode
 
 class Clusterer(BaseEstimator):
     def __init__(self, detector,
-                hidden_dim_1=100, hidden_dim_2=100, dense_dim=100, 
-                batch_size=128, n_epochs=5, dropout_rate=0.15,
-                val_frac=0.1):
+                 hidden_dim_1=100, hidden_dim_2=100, dense_dim=100, nstraws_perlayer=5, 
+                 batch_size=128, n_epochs=5, patience=10, dropout_rate=0.15,
+                 val_frac=0.1):
         """
         LSTM model example.
         TODO: fill in more details.
@@ -21,10 +21,11 @@ class Clusterer(BaseEstimator):
         self.dense_dim = dense_dim
         self.batch_size = batch_size
         self.n_epochs = n_epochs
+        self.patience = patience
         self.dropout_rate = dropout_rate
         self.val_frac = val_frac
         self.detector=detector
-        self.nstraws_perlayer = 5 # max number of straw hits per layer (including "0", ie no hits from the track in this layer)
+        self.nstraws_perlayer = nstraws_perlayer # max number of straw hits per layer (including "0", ie no hits from the track in this layer)
         
         if False: '''
         self.model=None
@@ -43,7 +44,6 @@ class Clusterer(BaseEstimator):
         self.history = {}    
         
         
-
     def build_model(self, 
                     model_structure='LSTMx2_Dropout',
                     loss='binary_crossentropy',## the HEPTrkX code was using categorical_ce
@@ -202,7 +202,7 @@ class Clusterer(BaseEstimator):
                         istraw=istraws[i]
                         if len( np.where(ihit_perlayer[ilayer]==0)[0] )==0:
                             print('Oops! No room left in hit index, too many hits in layer')
-                            ihit_index=2
+                            ihit_index=np.random.choice(self.nstraws_perlayer)
                         else: ihit_index = np.random.choice( np.array( np.where(ihit_perlayer[ilayer]==0)[0] ))
                         holder_input[seed_location][n_seeds[seed_location]][ilayer][ihit_index] = istraw+1
                         if evts_ids[i_evt][ilayer][istraw]==seed_id:
@@ -438,14 +438,14 @@ class Clusterer(BaseEstimator):
         #self.prepare_training_data_multiseed(evts_hits, evts_ids)
         print('Starting training...')
         ## callback to optimize when training is stopped
-        callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+        callback = keras.callbacks.EarlyStopping(monitor='val_loss', patience=self.patience, restore_best_weights=True)
         min_epochs=self.n_epochs
         for seed_location in ['front','middle','back']:
             self.history[seed_location] = self.model[seed_location].fit(
                 self.train_input[seed_location], self.train_target[seed_location],
                 batch_size=self.batch_size, epochs=self.n_epochs, callbacks=[callback],
                 validation_split=self.val_frac)
-            if self.history[seed_location].history['val_accuracy'][-1]<0.9:
+            if self.history[seed_location].history['val_accuracy'][-1]<0.8:
                 raise ValueError('\nValidation accuracy too low, skip this trial...\n\n') 
             if callback.stopped_epoch<min_epochs: min_epochs=callback.stopped_epoch
         if self.n_epochs>min_epochs: self.n_epochs=min_epochs
@@ -519,7 +519,10 @@ class Clusterer(BaseEstimator):
                 ilayers,istraws=allhits_layers[not_module_mask], allhits_straws[not_module_mask] # this excludes hits from the same module as the seed 
                 for i,ilayer in enumerate(ilayers):
                     istraw=istraws[i]
-                    ihit_index = np.random.choice( np.array( np.where(ihit_perlayer[ilayer]==0)[0] ))
+                    if len( np.where(ihit_perlayer[ilayer]==0)[0] )==0:
+                        print('Oops! No room left in hit index, too many hits in layer')
+                        ihit_index=np.random.choice(self.nstraws_perlayer)
+                    else: ihit_index = np.random.choice( np.array( np.where(ihit_perlayer[ilayer]==0)[0] ))
                     model_input[seed_location][i_seed[seed_location]][ilayer][ihit_index] = istraw+1
                     ## increment i_hit in this layer
                     ihit_perlayer[ilayer][ihit_index]=1

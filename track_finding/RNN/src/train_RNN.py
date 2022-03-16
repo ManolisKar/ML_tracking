@@ -27,21 +27,25 @@ if 'synthetic' in synthetic_dir: print('\n Reading in %d synthetic events' % evt
 tracker_NN=clusterer.Clusterer(hidden_dim_1=250,
                                hidden_dim_2=250,
                                dense_dim=400,
-                               batch_size=100, 
-                               n_epochs=400, val_frac=0.05, detector=tracker)
-tracker_NN.build_model(model_structure='LSTMx2_Dropout_ExtraDense')
+                               nstraws_perlayer=4,
+                               batch_size=20, 
+                               n_epochs=4000, patience=10,
+                               val_frac=0.2, detector=tracker)
+tracker_NN.build_model(model_structure='LSTMx2_Dropout_ExtraDense',
+                       loss='binary_crossentropy')
 for seed_location in ['front','middle','back']:
     tracker_NN.model[seed_location].summary()
 
 ### Train
 from sklearn.model_selection import train_test_split
-evts_hits_train, evts_hits_test, evts_ids_train, evts_ids_test = train_test_split(evts_hits,evts_ids, train_size=0.95)
-tracker_NN.fit(evts_hits_train, evts_ids_train)
-util.draw_train_history(tracker_NN.history)
+#evts_hits_train, evts_hits_test, evts_ids_train, evts_ids_test = train_test_split(evts_hits,evts_ids, train_size=1-val_frac)
+#tracker_NN.fit(evts_hits_train, evts_ids_train)
+tracker_NN.fit(evts_hits, evts_ids)
+#util.draw_train_history(tracker_NN.history)
 
 ### We can choose to save the model after fitting
 for seed_location in ['front','middle','back']:
-    tracker_NN.model[seed_location].save(rnn_dir+'/saved_models/tracker_NN_%s_2202_noise.h5'%seed_location) 
+    tracker_NN.model[seed_location].save(rnn_dir+'/saved_models/tracker_NN_2202_noise_4StrawsPerLayer_%s.h5'%seed_location) 
 
 ### Or just read an existing model (must have same model structure)
 '''
