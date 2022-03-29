@@ -49,7 +49,7 @@ if 'tracked' in datafile:
 else:
     evts_hits,evts_ids = pickle.load(events_file,encoding='latin1')
 
-ntest=2000
+ntest=1000
 evts_hits_test=evts_hits[:ntest]
 evts_ids_test=evts_ids[:ntest]
 if tracked: tracked_ids=tracked_ids[:ntest]
