@@ -323,6 +323,7 @@ def score_function(true_ids, predicted_ids, verbose=False):
     
     n_trackhits, n_trackhits_correct=0,0
     n_predicted,n_predicted_correct=0,0
+    n_tracks_total,n_tracks_found,n_duplicate_tracks,n_tracks_correct=0,0,0,0
     
     n_evts=true_ids.shape[0]
     n_print=max(1,int(n_evts/10))
@@ -332,9 +333,13 @@ def score_function(true_ids, predicted_ids, verbose=False):
         ## get all true track ids in this event
         track_ids = [i for i in np.unique(true_ids[i_evt]) if i>0]
         if len(track_ids)==0: continue
+        n_tracks_total += len(track_ids)
+
         ## get all predicted ids in this event
         pred_ids = [i for i in np.unique(predicted_ids[i_evt]) if i>0]
-        
+        n_tracks_found+=len(pred_ids)
+        real_ids_used=[]        
+
         for pred_id in pred_ids:
             # get all hits that are predicted to be in the same track
             pred_layers,pred_straws=np.where(predicted_ids[i_evt]==pred_id)
@@ -343,8 +348,7 @@ def score_function(true_ids, predicted_ids, verbose=False):
             # get the real track that corresponds to this (ambiguity?)
             trackhit_ids, counts = np.unique(true_ids[i_evt][pred_layers,pred_straws], return_counts=True)
             most_id=np.argmax(counts)
-            track_id = trackhit_ids[most_id]
-            
+            track_id = trackhit_ids[most_id]            
             ''' ** Alt way to get track_id: **
             track_id=0
             for idx in track_ids:
@@ -355,7 +359,14 @@ def score_function(true_ids, predicted_ids, verbose=False):
                     track_id=idx
                     break
             '''
-            
+
+            correctly_predicted_hits = len( np.where( true_ids[i_evt][pred_layers,pred_straws]==track_id )[0] )
+            if track_id in real_ids_used: 
+                n_duplicate_tracks+=1
+            elif correctly_predicted_hits==len(pred_layers):
+                n_tracks_correct+=1
+            real_ids_used+=[track_id]
+
             # get how many of the predicted_ids are correct:
             n_predicted_correct += len( np.where( true_ids[i_evt][pred_layers,pred_straws]==track_id )[0] )
             
@@ -377,7 +388,11 @@ def score_function(true_ids, predicted_ids, verbose=False):
     error_returned=100*(1-n_predicted_correct/n_predicted)
     print('Fraction of track hits identified correctly: ', accuracy_full)
     print('Fractional error (wrongly assigned hits): ', error_returned)
+    print('# tracks found (and number of duplicates): %d (%d) out of %d'%(n_tracks_found,n_duplicate_tracks, n_tracks_total))
+    print('Fully correct tracks found : ', n_tracks_correct)
     
     return accuracy_full,error_returned
+
+
 
 

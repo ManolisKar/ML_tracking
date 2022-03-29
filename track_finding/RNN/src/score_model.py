@@ -41,10 +41,19 @@ if datafile is None:
     events_file=open(synthetic_dir+'synthetic_events.pkl','rb')
 else: 
     events_file=open(datafile,'rb')
-evts_hits,evts_ids = pickle.load(events_file,encoding='latin1')
-evts_hits_test=evts_hits[:1000]
-evts_ids_test=evts_ids[:1000]
-    
+## did we read a file with tracked data?
+tracked=0
+if 'tracked' in datafile:
+    tracked=1
+    evts_hits,evts_ids,tracked_ids = pickle.load(events_file,encoding='latin1')
+else:
+    evts_hits,evts_ids = pickle.load(events_file,encoding='latin1')
+
+ntest=1000
+evts_hits_test=evts_hits[:ntest]
+evts_ids_test=evts_ids[:ntest]
+if tracked: tracked_ids=tracked_ids[:ntest]
+
 ### Get accuracy metrics
 ## First the raw selection score
 start_time=time.perf_counter()
@@ -65,6 +74,15 @@ full_score_time=end_time-start_time
 n_tracks=0
 for predicted_id in predicted_ids:
     n_tracks += np.max(predicted_id)
-print('Total tracks found: ', n_tracks)
+print('Total tracks found (alt extraction): ', n_tracks)
 print('Time for prediction (s) : ', predict_time)
 print('Time for full scoring (s) : ', full_score_time)
+
+## If we have tracked data, give these metrics also
+if tracked:
+    print('\n\n Metrics for tracked data:')
+    full_score=util.score_function(evts_ids_test, tracked_ids )
+    n_tracks=0
+    for tracked_id in tracked_ids:
+        n_tracks += np.max(tracked_id)
+    print('Total tracks found (alt extraction): ', n_tracks)
