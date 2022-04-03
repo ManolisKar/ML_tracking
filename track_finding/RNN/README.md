@@ -23,5 +23,17 @@ A further benefit of this formulation is that the fractional output of the model
 The last part of the algorithm is an iterative procedure to merge different seeds into the same track, and to resolve ambiguities and uncertainties. This procedure makes use of both:
 * high-confidence information, eg when a track is found, its hits are removed from the input of other seeds that are still facing ambiguity, to make their task easier; and
 * low-confidence information, where we may decide to drop ambiguous hits from consideration to avoid errors and make it easier to converge to a track.  
+
 This updating and using all available information to deal with uncertainty is reminiscent of a Kalman filter, an algorithm that has also been traditionally used in tracking applications.
 
+
+
+## Performance
+
+We developed a synthetic dataset for training, performance evaluation and comparison with the main (currently used) tracking algorithm. 
+In the image below you see the comparison in track finding performance between the main tracking and our RNN model and algorithm, on the same event we have been examining in this page. This being a quite challenging event with crossing tracks and noise hits, the main tracking algorithm makes several mistakes (marked by Xs in the image) and even breaks a particle track in two. Our model on the other hand is able to powerfully associate hits with seed segments, and our algorithm can drop ambiguous hits without losing the "big picture" of the event.
+
+![comparison](https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/comparison.png?raw=true)
+
+
+Overall our algorithm is proven to be "smarter" than the one currently used in the experiment. It finds track candidates that are much more pure (error-free) and much more likely to be reconstructed successfully. This improved performance can potentially deliver significant gains for the experimenal targets. 
