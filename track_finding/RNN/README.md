@@ -29,7 +29,7 @@ This updating to use all available information and dealing with uncertainty is r
 
 
 
-## Performance
+## A smarter algorithm
 
 We developed a synthetic dataset for training, performance evaluation and comparison with the main (currently used) tracking algorithm. 
 In the image below you see the comparison in track finding performance between the main tracking and our RNN model and algorithm, on the same event we have been examining in this page. This being a quite challenging event with crossing tracks and noise hits, the main tracking algorithm makes several mistakes (marked by Xs in the image) and even breaks a particle track in two. Our model on the other hand is able to powerfully associate hits with seed segments, and our algorithm can drop ambiguous hits without losing the "big picture" of the event.
@@ -38,3 +38,30 @@ In the image below you see the comparison in track finding performance between t
 
 
 Overall our algorithm is proven to be "smarter" than the one currently used in the experiment. It finds track candidates that are much more pure (error-free) and much more likely to be reconstructed successfully. This improved performance can potentially deliver significant gains for the experimenal targets. 
+
+
+
+## Performance metrics
+
+Critical to characterize our model's is the development of useful metrics. 
+We develop several custom metrics to characterize different aspects of this complicated task:
+* The fraction of the true track's hits that are correctly identified as part of the track, averaged over the population of found tracks;
+* The fraction of assigned hits that are wrongly identified with a track; 
+* The total number of tracks found, as a fraction of the true number of tracks in the test dataset. Also quoted is the number of "duplicate" tracks, ie tracks which an algorithm wrongly splits into two or more, as in the image above.
+
+Note that these performance metrics allow us to tune the model for the desired performance. In the image below we plot results from several trials on the merging algorithm. There are 2 points from each trial, a blue one denoting hit assignment accuracy and a red one on the number of tracks found in the trial. They are both plotted on the same vertical location for the hit assignment error for that trial. Admittedly this isn't an easy plot to read.  
+Also plotted are two arrows that demonstrate necessary trade-offs between the performance metrics. Eg, the red arrow suggests that if we need to find more tracks in the dataset, we need to be more bold with out merging choices, thereby also increasing our error rate. From this set of trials we can select a merging strategy that fits our requirements and which performs better than the average trend. 
+A separate tuning of the RNN hyperparameters and architecture was also performed.
+
+![merging_trials](https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/merging_trials.png?raw=true)
+
+
+
+
+The performance of the main tracking and our RNN model along those metrics is compared in the table below. It can be seen that tracks found by our RNN model contain fewer errors and more hits from the true track, on average. The existing ("main tracking") algorithm finds many tracks of low quality, many of which are duplicates or contain errors. The result is that many of these track candidates will go on to fail the reconstruction process, which consists of expensive simulation iterations, straining computational resources. This is a significant consideration for the collaboration and for the Fermilab Scientific Computing Division. Our algorithm on the other hand returns fewer track candidates of significantly higher purity, with amny potential benefits:
+* Computational resources required for the processing of found tracks are reduced by approximately 15%.
+* The tracks found contain fewer errors, yielding more accurate information on the beam dynamics of the muon distribution whence those particles decayed.
+* It's possible that with track candidates of higher purity, we can increase the number of found tracks, even when starting with a smaller population of candidates.
+
+![metrics](https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/metrics.png?raw=true)
+
