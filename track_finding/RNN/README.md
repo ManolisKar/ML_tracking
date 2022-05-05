@@ -63,5 +63,6 @@ The performance of the main tracking and our RNN model along those metrics is co
 * The tracks found contain fewer errors, yielding more accurate information on the beam dynamics of the muon distribution whence those particles decayed.
 * It's possible that with track candidates of higher purity, we can increase the number of found tracks, even when starting with a smaller population of candidates.
 
+
 ![metrics](https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/metrics.png?raw=true)
 
