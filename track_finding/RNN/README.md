@@ -32,7 +32,7 @@ This updating to use all available information and dealing with uncertainty is r
 ## A smarter algorithm
 
 We developed a synthetic dataset for training, performance evaluation and comparison with the main (currently used) tracking algorithm. 
-In the image below you see the comparison in track finding performance between the main tracking and our RNN model and algorithm, on the same event we have been examining in this page. This being a quite challenging event with crossing tracks and noise hits, the main tracking algorithm makes several mistakes (marked by Xs in the image) and even breaks a particle track in two. Our model on the other hand is able to powerfully associate hits with seed segments, and our algorithm can drop ambiguous hits without losing the "big picture" of the event.
+In the image below you see the comparison in track finding performance between the existing tracking algorithm ("Main Tracking") and our RNN model, on the same event we have been examining in this page. This being a quite challenging event with crossing tracks and noise hits, the main tracking algorithm makes several mistakes (marked by Xs in the image) and even breaks a particle track in two. Our model on the other hand is able to powerfully associate hits with seed segments, and our algorithm can drop ambiguous hits without losing the "big picture" of the event.
 
 ![comparison](https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/comparison.png?raw=true)
 
@@ -43,7 +43,7 @@ Overall our algorithm is proven to be "smarter" than the one currently used in t
 
 ## Performance metrics
 
-Critical to characterize our model's is the development of useful metrics. 
+Critical to characterize our model's performance is the development of useful metrics. 
 We develop several custom metrics to characterize different aspects of this complicated task:
 * The fraction of the true track's hits that are correctly identified as part of the track, averaged over the population of found tracks;
 * The fraction of assigned hits that are wrongly identified with a track; 
