@@ -49,9 +49,9 @@ We develop several custom metrics to characterize different aspects of this comp
 * The fraction of assigned hits that are wrongly identified with a track; 
 * The total number of tracks found, as a fraction of the true number of tracks in the test dataset. Also quoted is the number of "duplicate" tracks, ie tracks which an algorithm wrongly splits into two or more, as in the image above.
 
-Note that these performance metrics allow us to tune the model for the desired performance. In the image below we plot results from several trials on the merging algorithm. There are 2 points from each trial, a blue one denoting hit assignment accuracy and a red one on the number of tracks found in the trial. They are both plotted on the same vertical location for the hit assignment error for that trial. Admittedly this isn't an easy plot to read.  
-Also plotted are two arrows that demonstrate necessary trade-offs between the performance metrics. Eg, the red arrow suggests that if we need to find more tracks in the dataset, we need to be more bold with out merging choices, thereby also increasing our error rate. From this set of trials we can select a merging strategy that fits our requirements and which performs better than the average trend. 
-A separate tuning of the RNN hyperparameters and architecture was also performed.
+These performance metrics allow us to tune the model for the desired performance. In the image below we plot results from several trials on the merging algorithm. There are 2 points from each trial, a blue one denoting hit assignment accuracy and a red one on the number of tracks found in the trial. They are both plotted on the same vertical location for the hit assignment error for that trial. Admittedly this isn't an easy plot to read, but it is useful to condense information along multiple performance dimensions.  
+Also plotted are two arrows that demonstrate necessary trade-offs between the performance metrics. Eg, the red arrow suggests that if we need to find more tracks in the dataset, we need to be more bold with out merging choices, thereby also increasing our error rate. From this set of trials we can select a merging strategy that fits our requirements and which performs better than the average trends. 
+A separate but similar tuning of the RNN hyperparameters and architecture was also performed.
 
 ![merging_trials](https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/merging_trials.png?raw=true)
 
