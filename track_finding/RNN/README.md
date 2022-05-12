@@ -25,7 +25,9 @@ The last part of the algorithm is an iterative procedure to merge different seed
 * high-confidence information, eg when a track is found, its hits are removed from the input of other seeds that are still facing ambiguity, to make their task easier; and
 * low-confidence information, where we may decide to drop ambiguous hits from consideration to avoid errors and make it easier to converge to a track.  
 
-This updating to use all available information and dealing with uncertainty is reminiscent of a Kalman filter, an algorithm that has also been traditionally used in tracking applications.
+This updating to use all available information and dealing with uncertainty is reminiscent of a Kalman filter, an algorithm that has also been traditionally used in tracking applications.  
+
+> This hybrid approach, consisting of a recursive NN followed by an algorithmic step where we process the model's output iteratively, results in an algorithm that is more interpretable, and in which we have more control to tune for the desired performance parameters.
 
 
 
