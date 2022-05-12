@@ -31,7 +31,7 @@ This updating to use all available information and dealing with uncertainty is r
 
 ## A smarter algorithm
 
-We developed a synthetic dataset for training, performance evaluation and comparison with the main (currently used) tracking algorithm. 
+We developed a [synthetic dataset](https://github.com/ManolisKar/ML_tracking/tree/main/MC) for training, performance evaluation and comparison with the main (currently used) tracking algorithm. 
 In the image below you see the comparison in track finding performance between the existing tracking algorithm ("Main Tracking") and our RNN model, on the same event we have been examining in this page. This being a quite challenging event with crossing tracks and noise hits, the main tracking algorithm makes several mistakes (marked by Xs in the image) and even breaks a particle track in two. Our model on the other hand is able to powerfully associate hits with seed segments, and our algorithm can drop ambiguous hits without losing the "big picture" of the event.
 
 ![comparison](https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/comparison.png?raw=true)
