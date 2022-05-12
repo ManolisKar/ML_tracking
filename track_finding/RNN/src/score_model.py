@@ -1,4 +1,6 @@
 import os,sys
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
@@ -24,7 +26,8 @@ datafile=args.datafile
 
 ## Build the NN
 tracker=detector.build_tracker()
-tracker_NN=clusterer.Clusterer(detector=tracker)
+tracker_NN=clusterer.Clusterer(detector=tracker,
+                               nstraws_perlayer=4)
 tracker_NN.build_model()
 
 ## Read in the trained model
