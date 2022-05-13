@@ -4,10 +4,10 @@ The Muon g-2 tracking framework identifies series of signals in detector element
 
 Stringent Quality Cuts (**QC**) are applied on the reconstructed tracks to ensure that errors in the reconstruction process are avoided. Eg the tracks are required to contain a minimum number of detector elements hit by the particle, and meet a minimum reconstruction fit probability, among other selection criteria. It turns out that the QC remove the majority of reconstructed track candidates.
 
-<p align = "center">
-<img src="https://github.com/ManolisKar/ML_tracking/blob/main/track_quality/images/resolutions_QC.png?raw=true" alt="Trulli" style="width:100%">
+<p align = "right">
+<img src="https://github.com/ManolisKar/ML_tracking/blob/main/track_quality/images/resolutions_QC.png?raw=true" alt="Trulli" style="width:50%">
 </p>
-<p align = "center">
+<p align = "right">
 <sup>
 Vertex resolution (combined radial and vertical) of a full simulated sample of track candidates (in blue) and those that survive the QC (in orange). The majority of track candidates are removed by the QC.
 </sup>
