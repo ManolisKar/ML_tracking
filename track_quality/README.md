@@ -62,7 +62,7 @@ Fig. 3: Radial and vertical resolutions of tracks accepted by the three classifi
 
 We observe that the three classifiers select very similar distributions of tracks. By using their combinations we can capture the subtle complementary insights between them, while being much more stable against outliers. 
 In the table below we list the number of tracks accepted from each classifier choice, along with the selection truth. 
-Based on this, a reasonably conservative approach would be to select only tracks accepted by all three classifiers. 
+Based on this, a reasonably conservative approach would be to select only tracks accepted by all three classifiers. That 
 
 
 | Classifier  |  # accepted tracks | 
@@ -74,6 +74,17 @@ Based on this, a reasonably conservative approach would be to select only tracks
 | All | 168 |
 | Selection truth | 237 |
 | QC | 74 |
-| ----------  | ------- |
+
+
+
+
+<p align = "center">
+<img src="https://github.com/ManolisKar/ML_tracking/blob/main/track_quality/images/resolution_final.png?raw=true" alt="Trulli" style="width:100%">
+</p>
+<p align = "center">
+<sup>
+Fig. 4: Radial and vertical resolutions of tracks accepted by All three ML classifiers (blue), and by QC (red).
+</sup>
+</p>
 
 
