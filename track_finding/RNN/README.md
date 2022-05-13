@@ -9,10 +9,11 @@ In the image below the empty circles denote the vertical center of the straw ele
 
 ## The model 
 
+![LSTM_HepTrkX](https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/HEP.TrkX_LSTM.png?raw=true){: style="float: left"}
+
+
 The model structure extends an original idea explored by the [HEP.TrkX project](https://heptrkx.github.io) in [this paper](https://www.epj-conferences.org/articles/epjconf/abs/2017/19/epjconf_ctdw2017_00003/epjconf_ctdw2017_00003.html) and elsewhere.  
 In this problem formulation the detector layers are treated as successive "time steps". This motivates the use of a Recurrent Neural Network (RNN) with LSTM layers which are well suited for time-sequence problems. The LSTM layers are followed by a time-distributed fully-connected layer. The output of the NN targets the hits in each detector layer that are associated with the searched track. 
-
-![LSTM_HepTrkX](https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/HEP.TrkX_LSTM.png?raw=true)
 
 In our modification of this approach, each input is associated with a "seed": a collection of 3-4 hits in successive layers that appears to come from the same particle track. Note that often there are multiple seeds per track.  
 The output of the model then aims to associate hits that are likely to arise from the same particle track as the seed.  
