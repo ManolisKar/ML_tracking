@@ -37,12 +37,15 @@ My talented collaborators from the University of Liverpool, especially Antony Hi
 
 
 <figure>
-<img src="https://github.com/ManolisKar/ML_tracking/blob/main/MC/images/synthetic_event.png?raw=true" alt="Trulli" style="width:100%">
-<figcaption align = "center"><b>A synthetic event, consisting of two isolated tracks overlaid onto the same time window.</b></figcaption>
+<img src="https://github.com/ManolisKar/ML_tracking/blob/main/MC/images/synthetic_event.png?raw=true" alt="Trulli" style="width:80%">
+<figcaption align = "center"> A synthetic event, consisting of two isolated tracks overlaid onto the same time window.
+</figcaption>
 </figure>
 
 
-<? ![synthetic_event](https://github.com/ManolisKar/ML_tracking/blob/main/MC/images/synthetic_event.png?raw=true) ?>
+<? ![synthetic_event](https://github.com/ManolisKar/ML_tracking/blob/main/MC/images/synthetic_event.png?raw=true) ?>  
+
+
 
 > A synthetic dataset thus created includes target labels for supervised training. By training our model to identify the real tracks in this dataset, we ensure it will be highly applicable on real unlabeled production data as well.
 
