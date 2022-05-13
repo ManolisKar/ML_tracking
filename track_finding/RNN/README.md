@@ -30,9 +30,9 @@ A further benefit of this formulation is that the fractional output of the model
 <img src="https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/model_output.png?raw=true" alt="Trulli" style="width:100%">
 </p>
 <p align = "center">
-<font size="0.8">
+<sup><sub>
 Model output, for the input using the seed circled in the left. The output for each hit is interpreted as the probability that it belongs with the same track as the seed.
-</font> 
+</sub></sup>
 </p>
 
 The last part of the algorithm is an iterative procedure to merge different seeds into the same track, and to resolve ambiguities and uncertainties. This procedure makes use of both:
