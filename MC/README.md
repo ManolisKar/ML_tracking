@@ -37,6 +37,7 @@ My talented collaborators from the University of Liverpool, especially Antony Hi
 
 
 | ![synthetic_event](https://github.com/ManolisKar/ML_tracking/blob/main/MC/images/synthetic_event.png?raw=true) |
+| --- |
 | A synthetic event, consisting of two isolated tracks overlaid onto the same time window. |
 
 > A synthetic dataset thus created includes target labels for supervised training. By training our model to identify the real tracks in this dataset, we ensure it will be highly applicable on real unlabeled production data as well.
