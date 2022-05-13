@@ -61,10 +61,9 @@ A separate but similar tuning of the RNN hyperparameters and architecture was al
 
 
 
-The performance of the main tracking and our RNN model along those metrics is compared in the table below. It can be seen that tracks found by our RNN model contain fewer errors and more hits from the true track, on average. The existing ("main tracking") algorithm finds many tracks of low quality, many of which are duplicates or contain errors. The result is that many of these track candidates will go on to fail the reconstruction process, which consists of expensive simulation iterations, straining computational resources. This is a significant consideration for the collaboration and for the Fermilab Scientific Computing Division. Our algorithm on the other hand returns fewer track candidates of significantly higher purity, with amny potential benefits:
-* Computational resources required for the processing of found tracks are reduced by approximately 15%.
-* The tracks found contain fewer errors, potentially yielding more accurate information on the beam dynamics of the muon distribution whence those particles decayed.
-* It's possible that with track candidates of higher purity, we can increase the number of found tracks, even when starting with a smaller population of candidates.
+The performance of the main tracking and our RNN model along those metrics is compared in the table below.  
+
+
 
 |                                                          | Main Tracking       | LSTM-based Model |
 |----------------------------------------------------------|      -----:         |-----------:        |
@@ -73,3 +72,9 @@ The performance of the main tracking and our RNN model along those metrics is co
 | # of found tracks [and split tracks]       (out of 1970) | 2167 [149]  (110.0%) | 1799 [6]  (91.3%) |
 
 
+
+
+It can be seen that tracks found by our RNN model contain fewer errors and more hits from the true track, on average. The existing ("main tracking") algorithm finds many tracks of low quality, many of which are duplicates or contain errors. The result is that many of these track candidates will go on to fail the reconstruction process, which consists of expensive simulation iterations, straining computational resources. This is a significant consideration for the collaboration and for the Fermilab Scientific Computing Division. Our algorithm on the other hand returns fewer track candidates of significantly higher purity, with many potential benefits:
+* Computational resources required for the processing of found tracks are reduced by approximately 17%. 
+* The errors in found tracks are slashed in half, potentially yielding more accurate information on the beam dynamics of the muon distribution whence those particles decayed.
+* It's possible that with track candidates of higher purity, we can increase the number of found tracks, even when starting with a smaller population of candidates.
