@@ -33,7 +33,7 @@ Some of the elements missing from the simple simulation, such as effects from th
 We can isolate real particle tracks with little to no ambiguity from late in the muon fill, when event rate is very low. These tracks are a high-purity sample that capture all the effects mentioned before that are difficult to implement in simulation. 
 From that high-purity sample, we overlay multiple tracks together in synthetic events, like the one shown in the image below. Approximations of crosstalk and noise effects can be artificially turned on as well, making the synthetic events practically indistinguishable from real ones.  
 
-> My talented collaborators from the University of Liverpool, especially Antony Hibbert, worked with the tracking code to build this synthetic dataset.
+My talented collaborators from the University of Liverpool, especially Antony Hibbert, worked with the tracking code to build this synthetic dataset.
 
 
 ![synthetic_event](https://github.com/ManolisKar/ML_tracking/blob/main/MC/images/synthetic_event.png?raw=true)
