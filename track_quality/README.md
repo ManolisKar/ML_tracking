@@ -62,7 +62,9 @@ Fig. 3: Radial and vertical resolutions of tracks accepted by the three classifi
 
 We observe that the three classifiers select very similar distributions of tracks. By using their combinations we can capture the subtle complementary insights between them, while being much more stable against outliers. 
 In the table below we list the number of tracks accepted from each classifier choice, along with the selection truth. 
-Based on this, a reasonably conservative approach would be to select only tracks accepted by all three classifiers. That 
+Based on this, a reasonably conservative approach would be to select only tracks accepted by All three classifiers. That would make any remaining outliers practically consistent with QC, while still **more than doubling the number of accepted high-quality tracks**. 
+
+In Fig. 4 we remove individual classifiers to see the resolution comparison more clearly.  It's good to see also that the resulting distributions of accepted tracks have good resolutions in the separate dimensions, even though we used a combined quality criterion. 
 
 
 | Classifier  |  # accepted tracks | 
@@ -88,3 +90,60 @@ Fig. 4: Radial and vertical resolutions of tracks accepted by All three ML class
 </p>
 
 
+## Assessing and next steps
+
+So we demonstrated that our combined classifiers identify many more high-quality tracks than the QC, and with very good resolution properties.
+We still however cannot blindly proceed to implement the new classification scheme (even if we assume that the simulation we used is a good representation of reality). We have to examine the track parameters used in the QC to understand where the differences arise from. 
+Some of these track parameters (about half) are plotted in Fig. 5. 
+
+
+<p align = "center">
+<img src="https://github.com/ManolisKar/ML_tracking/blob/main/track_quality/images/track_parameters.png?raw=true" alt="Trulli" style="width:100%">
+</p>
+<p align = "center">
+<sup>
+Fig. 5: Distributions of track parameters used in QC, for the tracks selected by QC (red) and by the ML classifier combinations (blue and orange).
+</sup>
+</p>
+
+I won't go into explaining all of these, as apparently only one is important: "pValue" plotted in the bottom right. 
+That is the fit probability of the reconstructed trajectory. Unfortunately it looks like all the extra tracks have very low, near-zero fit probability. 
+In fact a feature selection exercise using the code below, reveals that the fit probability is a very poor feature to classify quality tracks, counter-intuitively. 
+
+
+```
+from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import chi2 ## needs non-negative values, therefore rescaling of input is necessary
+from sklearn.feature_selection import mutual_info_classif
+
+## list of potentially useful variables/features
+clf_vars=['RecoTrackX','RecoTrackY','RecoTrackZ',
+          'pValue', 'nHits', 'nUHits','nVHits', 'MissedLayersFrac','MinDriftTime','MaxDriftTime','MaxResidual',
+          'RecoVertexX', 'RecoVertexY', 'RecoVertexZ', 'RecoVertexR',
+          'RecoVertexUncP', 'RecoVertexUncY', 'RecoVertexUncPY', 'RecoVertexUncR',
+          'RecoVertexUncPR', 'hitVolume', 'RecoExtrapolatedDistance',
+          'CaloVertexMomUnc', 'CaloVertexUncX',
+          'CaloVertexUncY', 'CaloVertexUncPX', 'CaloVertexUncPY','diff_UV', 'RecoVertexAzimuth']
+
+X=df_cutout[clf_vars].values
+y=df_cutout['quality'].values
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+
+#apply SelectKBest class to extract best features
+best_features = SelectKBest(score_func=mutual_info_classif, k=10)
+fit = best_features.fit(X_train,y_train)
+
+df_features=pd.DataFrame()
+df_features['Feature']=clf_vars
+df_features['Score']=fit.scores_
+df_features.sort_values(by='Score',ascending=False)
+```
+
+So how is it possible that tracks with very low fit probability achieve excellent vertex resolution? 
+Something that could be happening is that the track candidates contain a hit that didn't actually come from the same particle, but is instead arising from noise or crosstalk, or just from another particle track. 
+Then the outlying hit would destroy the fit probability, while not significantly altering the vertex reconstruction. 
+
+If that is the case, then identifying this large population of tracks with low fit probability but very good vertex resolution could be of massive benefit. 
+Those tracks could be treated for outliers and re-examined, potentially doubling the number of high-quality tracks. 
+For us however, this was a signal that we needed to work further upstream in the tracking chain to improve the quality of the incoming track candidates. 
+This is what motivated our work on the [LSTM-based track-finding algorithm](https://github.com/ManolisKar/ML_tracking/tree/main/track_finding/RNN). 
