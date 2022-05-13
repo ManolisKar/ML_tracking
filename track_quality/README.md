@@ -66,7 +66,7 @@ Based on this, a reasonably conservative approach would be to select only tracks
 
 
 | Classifier  |  # accepted tracks | 
-| ----------  | ------- |
+| ----------  | -------: |
 | AdaBoost    | 221 |
 | GradientBoosting| 214 | 
 | SVM | 228 | 
