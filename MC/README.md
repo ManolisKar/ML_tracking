@@ -39,13 +39,16 @@ My talented collaborators from the University of Liverpool, especially Antony Hi
 <p align = "center">
 
 <img src="https://github.com/ManolisKar/ML_tracking/blob/main/MC/images/synthetic_event.png?raw=true" alt="Trulli" style="width:80%">
-<? <figcaption align = "center"> A synthetic event, consisting of two isolated tracks overlaid onto the same time window.
-</figcaption> ?>
-</p>
-<p align = "center">
-A synthetic event, consisting of two isolated tracks overlaid onto the same time window.
+<figcaption align = "center"> A synthetic event, consisting of two isolated tracks overlaid onto the same time window.
+</figcaption>
 </p>
 
+
+
+<? <p align = "center">
+A synthetic event, consisting of two isolated tracks overlaid onto the same time window.
+</p>
+?>
 
 <? ![synthetic_event](https://github.com/ManolisKar/ML_tracking/blob/main/MC/images/synthetic_event.png?raw=true) ?>  
 
