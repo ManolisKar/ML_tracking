@@ -141,8 +141,8 @@ df_features.sort_values(by='Score',ascending=False)
 
 
 
-<p align = "center">
-<img src="https://github.com/ManolisKar/ML_tracking/blob/main/track_quality/images/feature_importance.png?raw=true" alt="Trulli" style="width:10%">
+<p align = "left">
+<img src="https://github.com/ManolisKar/ML_tracking/blob/main/track_quality/images/feature_importance.png?raw=true" alt="Trulli" style="width:30%">
 </p>
 <p align = "center">
 <sup>
