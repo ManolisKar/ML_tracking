@@ -36,9 +36,13 @@ From that high-purity sample, we overlay multiple tracks together in synthetic e
 My talented collaborators from the University of Liverpool, especially Antony Hibbert, worked with the tracking code to build this synthetic dataset.
 
 
-| ![synthetic_event](https://github.com/ManolisKar/ML_tracking/blob/main/MC/images/synthetic_event.png?raw=true) |
-| --- |
-| A synthetic event, consisting of two isolated tracks overlaid onto the same time window. |
+<figure>
+<img src="https://github.com/ManolisKar/ML_tracking/blob/main/MC/images/synthetic_event.png?raw=true" alt="Trulli" style="width:100%">
+<figcaption align = "center"><b>A synthetic event, consisting of two isolated tracks overlaid onto the same time window.</b></figcaption>
+</figure>
+
+
+<? ![synthetic_event](https://github.com/ManolisKar/ML_tracking/blob/main/MC/images/synthetic_event.png?raw=true) ?>
 
 > A synthetic dataset thus created includes target labels for supervised training. By training our model to identify the real tracks in this dataset, we ensure it will be highly applicable on real unlabeled production data as well.
 
