@@ -4,7 +4,12 @@ The Muon g-2 tracker detector consists of 32 layers of thin, long tubes ("straws
 "Track finding" refers to the task of associating straw hits (within a time window of 100 ns) with a specific particle track.  
 In the image below the empty circles denote the vertical center of the straw elements, and the black circles indicate the straws that recorded a signal, either from an actual particle or from noise/crosstalk. 
 
-![Window hits](https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/window_hits.png?raw=true)
+<p align = "center">
+<img src="https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/window_hits.png?raw=true" alt="Trulli" style="width:90%">
+</p>
+<p align = "center">
+A synthesized tracker event, consisting of 2 crossing tracks and noise hits. The task of track finding is to associate hits with the correct particle track while minimizing errors.
+</p>
 
 
 ## The model 
