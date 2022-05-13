@@ -30,8 +30,8 @@ A further benefit of this formulation is that the fractional output of the model
 <img src="https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/model_output.png?raw=true" alt="Trulli" style="width:100%">
 </p>
 <p align = "center">
-<font size="1">
-Model output, for the input using the "seed" circled in the left. The output for each hit is interpreted as the probability that it belongs with the same track as the seed.
+<font size="0.8">
+Model output, for the input using the seed circled in the left. The output for each hit is interpreted as the probability that it belongs with the same track as the seed.
 </font> 
 </p>
 
