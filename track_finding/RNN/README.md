@@ -67,8 +67,9 @@ The performance of the main tracking and our RNN model along those metrics is co
 * It's possible that with track candidates of higher purity, we can increase the number of found tracks, even when starting with a smaller population of candidates.
 
 |                                                          | Main Tracking       | LSTM-based Model |
-|----------------------------------------------------------|---------------------|------------------|
+|----------------------------------------------------------|      -----:         |-----------:        |
 | Precision on found tracks                                | 88.4%               | 92.5%            |
+|                                                           |      -----:         |-----------:        |
 | Wrongly assigned hits                                    | 5.8%                | 2.8%             |
 | # of found tracks [and split tracks]       (out of 1970) | 2167 [149]  (110.0%) | 1799 [6]  (91.3%) |
 
