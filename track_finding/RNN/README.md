@@ -17,7 +17,7 @@ In this problem formulation the detector layers are treated as successive "time 
 
 In our modification of this approach, each input is associated with a "seed": a collection of 3-4 hits in successive layers that appears to come from the same particle track. Note that often there are multiple seeds per track.  
 The output of the model then aims to associate hits that are likely to arise from the same particle track as the seed.  
-In each layer, the available hits are (_almost like_) one-hot encoded, so that the problem is turned into a classification task for each layer. Through considering a reduced number of potential straws (mainly those that are hit, plus some extra positions to maintain constant input dimension) we circumvent the sparsity of the problem to train efficiently and reach 97-98% accuracy on a validation set.  
+In each layer, the available hits are (_almost like_) one-hot encoded, so that the problem is turned into a classification task for each layer. By considering a reduced number of potential straws (mainly those that are hit, plus some extra positions to maintain constant input dimension) we circumvent the sparsity of the problem to train efficiently and reach 97-98% accuracy on a validation set.  
 A further benefit of this formulation is that the fractional output of the model is interpreted as the _confidence_ that a hit belongs with the searched track. In the image below, the colored model output indicates both high confidence for some hits, and some ambiguity at the location where two tracks intersect.
 
 ![model output](https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/model_output.png?raw=true)
@@ -35,7 +35,7 @@ This updating to use all available information and dealing with uncertainty is r
 ## A smarter algorithm
 
 We developed a [synthetic dataset](https://github.com/ManolisKar/ML_tracking/tree/main/MC) for training, performance evaluation and comparison with the main (currently used) tracking algorithm. 
-In the image below you see the comparison in track finding performance between the existing tracking algorithm ("Main Tracking") and our RNN model, on the same event we have been examining in this page. This being a quite challenging event with crossing tracks and noise hits, the main tracking algorithm makes several mistakes (marked by Xs in the image) and even breaks a particle track in two. Our model on the other hand is able to powerfully associate hits with seed segments, and our algorithm can drop ambiguous hits without losing the "big picture" of the event.
+In the image below you see the comparison in track finding performance between the existing tracking algorithm ("Main Tracking") and our RNN model, on the same event we have been examining in this page. This being quite a challenging event with crossing tracks and noise hits, the main tracking algorithm makes several mistakes (marked by Xs in the image) and even breaks a particle track in two. Our model on the other hand is able to powerfully associate hits with seed segments, and our algorithm can drop ambiguous hits without losing the "big picture" of the event.
 
 ![comparison](https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/comparison.png?raw=true)
 
@@ -67,5 +67,13 @@ The performance of the main tracking and our RNN model along those metrics is co
 * It's possible that with track candidates of higher purity, we can increase the number of found tracks, even when starting with a smaller population of candidates.
 
 
-![metrics](https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/metrics.png?raw=true)
+
+|                            |  Main Tracking   |   LSTM-based Model |
+| -------------------------- | ---------------- | ------------------ |
+| Precision on found tracks  |     88.4%        |       92.5%        |
+| Wrongly assigned hits      |      5.8%        |        2.8%        |
+| # of found tracks [and split tracks] (out of 1970)      |      2167 [149] (110.0%)        |        1799 [6] (91.3%)        |
+
+
+$![metrics](https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/metrics.png?raw=true)
 
