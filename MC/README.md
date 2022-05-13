@@ -12,11 +12,19 @@ The Detector class in [detector.py](https://github.com/ManolisKar/ML_tracking/bl
 
 We experimented with several degrees of freedom, such as occupancy, to characterize the track finding algorithm. In the image below we see the model's prediction for a complicated pseudo-event with 5 tracks, much higher occupancy than actually encountered in the experiment. While this is an early version of the track-finding model and algorithm, it exhibits powerful pattern-finding capabilities, assigning nearly all hits with the correct track. 
 
-![pseudoevent](https://github.com/ManolisKar/ML_tracking/blob/main/MC/images/pseudoevent.png?raw=true)
+<p align = "center">
+<img src="https://github.com/ManolisKar/ML_tracking/blob/main/MC/images/pseudoevent.png?raw=true" alt="Trulli" style="width:90%">
+</p>
+<p align = "center">
+Model prediction for a 5-track pseudo-event, in a simplified 2D representation of the tracker.
+</p>
 
+Notice that the model doesn't need to be aware that there are 5 tracks in the event, as a k-Means algorithm would be. 
+Unsupervised clustering algorithms were considered, and in fact I followed the HEP.TrkX convention of calling the model class *"Clusterer"*. 
+But the supervised approach is found to be more powerful. It does require however labeled training data, that also need to be realistic if the model is to be applied in production. 
 
-Note that the pseudo-world we are generating is 2-dimensional, when in reality both the straws and the tracks have 3-dimensional extent and parameters. 
-However this is not an obstacle for the framing and development of the algorithm, as the model represents each straw with a single element anyway. 
+The pseudo-world we are generating here is 2-dimensional, when in reality both the straws and the tracks have 3-dimensional extent and parameters. 
+This is not an obstacle for the framing and development of the algorithm, as the model represents each straw with a single element anyway. 
 Therefore this simulation achieves the required data input representation and facilitated much of the model and algorithm development. 
 The same model architecture can be applied on a real event, but of course its performance would be reduced as the training set is not fully realistic. 
 It is missing effects from the full 3-dimensional geometry, from the experiment's magnetic field, from any straw misalignments, etc.  
@@ -37,7 +45,7 @@ My talented collaborators from the University of Liverpool, especially Antony Hi
 
 
 <p align = "center">
-<img src="https://github.com/ManolisKar/ML_tracking/blob/main/MC/images/synthetic_event.png?raw=true" alt="Trulli" style="width:80%">
+<img src="https://github.com/ManolisKar/ML_tracking/blob/main/MC/images/synthetic_event.png?raw=true" alt="Trulli" style="width:90%">
 </p>
 <p align = "center">
 A synthetic event, consisting of two isolated tracks overlaid onto the same time window.
