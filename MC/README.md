@@ -15,9 +15,9 @@ We experimented with several degrees of freedom, such as occupancy, to character
 <p align = "center">
 <img src="https://github.com/ManolisKar/ML_tracking/blob/main/MC/images/pseudoevent.png?raw=true" alt="Trulli" style="width:90%">
 </p>
-<p align = "center">
+<p align = "center"><sup>
 Model prediction for a 5-track pseudo-event, in a simplified 2D representation of the tracker.
-</p>
+</sup></p>
 
 Notice that the model doesn't need to be aware that there are 5 tracks in the event, as a k-Means algorithm would be. 
 Unsupervised clustering algorithms were considered, and in fact I followed the HEP.TrkX convention of calling the model class *"Clusterer"*. 
@@ -47,9 +47,9 @@ My talented collaborators from the University of Liverpool, especially Antony Hi
 <p align = "center">
 <img src="https://github.com/ManolisKar/ML_tracking/blob/main/MC/images/synthetic_event.png?raw=true" alt="Trulli" style="width:90%">
 </p>
-<p align = "center">
+<p align = "center"><sup>
 A synthetic event, consisting of two isolated tracks overlaid onto the same time window.
-</p>
+</sup></p>
 
 
 
