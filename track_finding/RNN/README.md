@@ -25,7 +25,15 @@ The output of the model then aims to associate hits that are likely to arise fro
 In each layer, the available hits are (_almost like_) one-hot encoded, so that the problem is turned into a classification task for each layer. By considering a reduced number of potential straws (mainly those that are hit, plus some extra positions to maintain constant input dimension) we circumvent the sparsity of the problem to train efficiently and reach 97-98% accuracy on a validation set.  
 A further benefit of this formulation is that the fractional output of the model is interpreted as the _confidence_ that a hit belongs with the searched track. In the image below, the colored model output indicates both high confidence for some hits, and some ambiguity at the location where two tracks intersect.
 
-![model output](https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/model_output.png?raw=true)
+
+<p align = "center">
+<img src="https://github.com/ManolisKar/ML_tracking/blob/main/track_finding/RNN/images/model_output.png?raw=true" alt="Trulli" style="width:100%">
+</p>
+<p align = "center">
+<font size="1">
+Model output, for the input using the "seed" circled in the left. The output for each hit is interpreted as the probability that it belongs with the same track as the seed.
+</font> 
+</p>
 
 The last part of the algorithm is an iterative procedure to merge different seeds into the same track, and to resolve ambiguities and uncertainties. This procedure makes use of both:
 * high-confidence information, eg when a track is found, its hits are removed from the input of other seeds that are still facing ambiguity, to make their task easier; and
