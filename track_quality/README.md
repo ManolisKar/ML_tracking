@@ -139,6 +139,18 @@ df_features['Score']=fit.scores_
 df_features.sort_values(by='Score',ascending=False)
 ```
 
+
+
+<p align = "center">
+<img src="https://github.com/ManolisKar/ML_tracking/blob/main/track_quality/images/feature_importance.png?raw=true" alt="Trulli" style="width:10%">
+</p>
+<p align = "center">
+<sup>
+Fig. 6: Feature importance scores of several QC parameters. The reconstruction fit probability "pValue" is counter-intuitively very poor at predicting tracks with good resolution. 
+</sup>
+</p>
+
+
 So how is it possible that tracks with very low fit probability achieve excellent vertex resolution? 
 Something that could be happening is that the track candidates contain a hit that didn't actually come from the same particle, but is instead arising from noise or crosstalk, or just from another particle track. 
 Then the outlying hit would destroy the fit probability, while not significantly altering the vertex reconstruction. 
