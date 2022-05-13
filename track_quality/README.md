@@ -142,7 +142,7 @@ df_features.sort_values(by='Score',ascending=False)
 
 
 <p align = "left">
-<img src="https://github.com/ManolisKar/ML_tracking/blob/main/track_quality/images/feature_importance.png?raw=true" alt="Trulli" style="width:25%">
+<img src="https://github.com/ManolisKar/ML_tracking/blob/main/track_quality/images/feature_importance.png?raw=true" alt="Trulli" style="width:23%">
 </p>
 <p align = "center">
 <sup>
@@ -158,4 +158,4 @@ Then the outlying hit would destroy the fit probability, while not significantly
 If that is the case, then identifying this large population of tracks with low fit probability but very good vertex resolution could be of massive benefit. 
 Those tracks could be treated for outliers and re-examined, potentially doubling the number of high-quality tracks. 
 For us however, this was a signal that we needed to work further upstream in the tracking chain to improve the quality of the incoming track candidates. 
-This is what motivated our work on the [LSTM-based track-finding algorithm](https://github.com/ManolisKar/ML_tracking/tree/main/track_finding/RNN). 
+This is what motivated our work on the [LSTM-based track finding algorithm](https://github.com/ManolisKar/ML_tracking/tree/main/track_finding/RNN). 
